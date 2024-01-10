@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices.JavaScript;
 using Raylib_cs;
 
-namespace RaylibWasm
+namespace RhythmGalaxy
 {
     public partial class Application
     {

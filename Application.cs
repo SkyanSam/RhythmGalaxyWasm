@@ -17,10 +17,13 @@ namespace RhythmGalaxy
             
             logo = Raylib.LoadTexture("Resources/raylib_logo.png");
 
-            /*while (!Raylib.WindowShouldClose())
+#if !UseWebGL
+            while (!Raylib.WindowShouldClose())
             {
                 UpdateFrame();
-            }*/
+            }
+            Raylib.CloseWindow();
+#endif
         }
 
         /// <summary>

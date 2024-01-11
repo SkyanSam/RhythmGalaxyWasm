@@ -8,6 +8,7 @@ const config = getConfig();
 const exports = await getAssemblyExports(config.mainAssemblyName);
 
 console.log("config.mainAssemblyName -> " + config.mainAssemblyName);
+console.log("exports -> " + exports);
 
 dotnet.instance.Module['canvas'] = document.getElementById('canvas');
 

@@ -3,9 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseWebGL>false</UseWebGL>
+    <DefineConstants Condition="'$(UseWebGL)' == 'true'">UseWebGL;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

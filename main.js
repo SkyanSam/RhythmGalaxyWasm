@@ -7,10 +7,12 @@ const { getAssemblyExports, getConfig } = await dotnet
 const config = getConfig();
 const exports = await getAssemblyExports(config.mainAssemblyName);
 
+console.log("config.mainAssemblyName -> " + config.mainAssemblyName);
+
 dotnet.instance.Module['canvas'] = document.getElementById('canvas');
 
 function mainLoop() {
-    exports.RaylibWasm.Application.UpdateFrame();
+    exports.RhythmGalaxyWasm.Application.UpdateFrame();
 
     window.requestAnimationFrame(mainLoop);
 }

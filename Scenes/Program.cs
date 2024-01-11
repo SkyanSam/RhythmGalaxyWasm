@@ -1,11 +1,14 @@
 ﻿using Raylib_cs;
 using CSScriptLib;
 using System;
-using RhythmGalaxy;
+/*using RhythmGalaxy;
 using RhythmGalaxy.ECS;
 using System.Numerics;
 using System.Collections.Generic;
 using System.Collections;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
+
 // See https://aka.ms/new-console-template for more information
 Console.WriteLine("Hello, World!");
 
@@ -26,10 +29,12 @@ spriteSystem.Initialize();
 Entity entity = new Entity();
 Entity entity2 = new Entity();
 Entity entity3 = new Entity();
+
+
 entity.componentRefs = new Dictionary<Type, int>();
 entity2.componentRefs = new Dictionary<Type, int>();
 entity3.componentRefs = new Dictionary<Type, int>();
-var tIndex = Database.AddComponent(typeof(TransformComponent), new TransformComponent()
+var tIndex = Database.AddComponent(new TransformComponent()
 {
     xScale = 40,
     yScale = 40,
@@ -37,7 +42,7 @@ var tIndex = Database.AddComponent(typeof(TransformComponent), new TransformComp
     xPosition = 100,
     yPosition = 100
 });
-var tIndex2 = Database.AddComponent(typeof(TransformComponent), new TransformComponent()
+var tIndex2 = Database.AddComponent(new TransformComponent()
 {
     xScale = 40,
     yScale = 40,
@@ -45,7 +50,7 @@ var tIndex2 = Database.AddComponent(typeof(TransformComponent), new TransformCom
     xPosition = 200,
     yPosition = 500
 });
-var tIndex3 = Database.AddComponent(typeof(TransformComponent), new TransformComponent()
+var tIndex3 = Database.AddComponent(new TransformComponent()
 {
     xScale = 40,
     yScale = 40,
@@ -53,12 +58,14 @@ var tIndex3 = Database.AddComponent(typeof(TransformComponent), new TransformCom
     xPosition = 900,
     yPosition = 10
 });
-var sIndex = Database.AddComponent(typeof(SpriteComponent), new SpriteComponent()
+
+var sIndex = Database.AddComponent(new SpriteComponent()
 {
-    texture2D = Raylib.LoadTexture("res/greenflag.png"),
+    texture2D = Raylib.LoadTexture("Resources/greenflag.png"),
     scaleX = 1,
     scaleY = 1
 });
+
 entity.componentRefs[typeof(TransformComponent)] = tIndex;
 entity.componentRefs[typeof(SpriteComponent)] = sIndex;
 entity2.componentRefs[typeof(TransformComponent)] = tIndex2;
@@ -68,6 +75,8 @@ entity3.componentRefs[typeof(SpriteComponent)] = sIndex;
 Database.AddEntity(entity);
 Database.AddEntity(entity2);
 Database.AddEntity(entity3);
+
+Font font;
 
 while (!Raylib.WindowShouldClose())
 {
@@ -83,3 +92,6 @@ while (!Raylib.WindowShouldClose())
 }
 Raylib.CloseAudioDevice();
 Raylib.CloseWindow();
+*/
+
+

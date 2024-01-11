@@ -16,6 +16,11 @@ namespace RhythmGalaxy
             Raylib.SetTargetFPS(60);
             
             logo = Raylib.LoadTexture("Resources/raylib_logo.png");
+
+            /*while (!Raylib.WindowShouldClose())
+            {
+                UpdateFrame();
+            }*/
         }
 
         /// <summary>

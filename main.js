@@ -13,7 +13,7 @@ console.log("exports -> " + exports);
 dotnet.instance.Module['canvas'] = document.getElementById('canvas');
 
 function mainLoop() {
-    exports.RhythmGalaxyWasm.Application.UpdateFrame();
+    exports.RhythmGalaxy.Application.Update();
 
     window.requestAnimationFrame(mainLoop);
 }

@@ -12,6 +12,8 @@ namespace RhythmGalaxy
 {
     public static class Globals
     {
+        public static string currentScene = "";
+        public static Dictionary<string, Scene> scenes = new Dictionary<string, Scene>();
         public static Random random = new Random();
         public static float timeDelta { get
             {

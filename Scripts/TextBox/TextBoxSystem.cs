@@ -15,7 +15,7 @@ namespace RhythmGalaxy
 {
     class TextBoxSystem
     {
-        static void DrawTextBoxed(
+        public static void DrawTextBoxed(
             Font font,
             string text,
             Rectangle rec,
@@ -29,7 +29,7 @@ namespace RhythmGalaxy
         }
 
         // Draw text using font inside rectangle limits with support for text selection
-        static unsafe void DrawTextBoxedSelectable(
+        public static unsafe void DrawTextBoxedSelectable(
             Font font,
             string text,
             Rectangle rec,

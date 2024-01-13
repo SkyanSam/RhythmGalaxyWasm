@@ -21,9 +21,17 @@ namespace RhythmGalaxy.ECS
         {
             return (T)components[typeof(T)][index];
         }
+        public static T GetComponent<T>(this Entity e) where T : Component
+        {
+            return (T)components[typeof(T)][e.componentRefs[typeof(T)]];
+        }
         public static void SetComponent<T>(int index, T value) where T : Component
         {
             components[typeof(T)][index] = value;
+        }
+        public static void SetComponent<T>(this Entity e, T value) where T : Component
+        {
+            components[typeof(T)][e.componentRefs[typeof(T)]] = value;
         }
         public static void RemoveComponent<T>(int index) where T : Component
         {
@@ -46,6 +54,7 @@ namespace RhythmGalaxy.ECS
                 }
             }
         }
+        
         /*public static int FindEntity(Entity e)
         {
             return entities.FindIndex(e2 => e == e2)

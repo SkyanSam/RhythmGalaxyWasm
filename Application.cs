@@ -53,9 +53,9 @@ namespace RhythmGalaxy
             spriteSystem.Initialize();
 
             // Scenes
-            Globals.scenes.Add("SampleScene", new SampleScene());
-            Globals.scenes.Add("SampleTextScene", new SampleTextScene());
-            Globals.currentScene = "SampleTextScene"; // use nameof
+            Globals.scenes.Add(nameof(SampleScene), new SampleScene());
+            Globals.scenes.Add(nameof(SampleTextScene), new SampleTextScene());
+            Globals.currentScene = nameof(SampleScene); // use nameof
             Globals.scenes[Globals.currentScene].Start();
         }
 

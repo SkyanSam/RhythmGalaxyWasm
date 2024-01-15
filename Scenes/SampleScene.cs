@@ -60,6 +60,8 @@ public class SampleScene : Scene
         if (transform.xPosition > maxX) transform.xPosition = maxX;
         if (transform.yPosition > maxY) transform.yPosition = maxY;
         Database.entities[playerID].SetComponent(transform);
+
+        GameUI.Draw();
     }
     public void Stop()
     {

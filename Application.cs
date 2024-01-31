@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Numerics;
 using System.Runtime.InteropServices.JavaScript;
 using System.Xml.Linq;
 using Raylib_cs;
+using TweenSharp;
+using TweenSharp.Animation;
+using TweenSharp.Factory;
 
 namespace RhythmGalaxy
 {
@@ -27,6 +31,8 @@ namespace RhythmGalaxy
             } catch (Exception e)
             {
                 Console.WriteLine("Error: {0}", e.ToString());
+                Console.WriteLine("\n --- Stack Trace --- \n");
+                Console.WriteLine(e.StackTrace);
             }
             finally
             {
@@ -52,16 +58,26 @@ namespace RhythmGalaxy
             spriteSystem = new SpriteSystem();
             spriteSystem.Initialize();
 
+            //Globals.tweenHandler = [];
             // Scenes
             Globals.scenes.Add(nameof(SampleScene), new SampleScene());
             Globals.scenes.Add(nameof(SampleTextScene), new SampleTextScene());
             Globals.currentScene = nameof(SampleScene); // use nameof
             Globals.scenes[Globals.currentScene].Start();
-        }
+            
 
+            
+            tween = ((SampleScene)Globals.scenes[Globals.currentScene]).Tween(x => x.hp).To(1.0).In(1.0).Repeat(4).Ease(Easing.CubicEaseInOut);
+
+
+        }
+        static Tween<SampleScene, double> tween;
+        
         [JSExport]
         public static void Update()
         {
+            tween.Update(1000 / 60);
+            //Globals.tweenHandler.Update(1000 / 60);
             Raylib.BeginDrawing();
             Raylib.BeginTextureMode(renderTarget);
 
@@ -95,5 +111,8 @@ namespace RhythmGalaxy
             isPendingSceneSwitch = true;
             pendingSceneSwitch = name;
         }
+
+        
+
     }
 }

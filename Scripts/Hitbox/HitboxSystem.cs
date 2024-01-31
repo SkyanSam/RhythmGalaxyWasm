@@ -6,19 +6,29 @@ using System.Threading.Tasks;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 using System.Numerics;
+using RhythmGalaxy.ECS;
 
 namespace RhythmGalaxy
 {
-    public class HitboxSystem
+    public class HitboxSystem : BaseSystem
     {
-        // Note that I may want to create a pointer for each Component instead of a Object
-        public List<HitboxComponent> playerHitboxes = new List<HitboxComponent>();
-        public List<HitboxComponent> playerBulletHitboxes = new List<HitboxComponent>();
-        public List<HitboxComponent> enemyHitboxes = new List<HitboxComponent>();
-        public List<HitboxComponent> enemyBulletHitboxes = new List<HitboxComponent>();
-
-        public void Update()
+        public override void Initialize()
         {
+            updateFormat = UpdateFormat.UpdateNRequestsNComponentSets;
+            typesetList = new List<Type[]> () {
+                new Type[2] { typeof(PlayerHitbox), typeof(HitboxComponent) },
+                new Type[2] { typeof(EnemyHitbox), typeof(HitboxComponent) },
+                new Type[2] { typeof(PlayerBulletHitbox), typeof(HitboxComponent) },
+                new Type[2] { typeof(EnemyBulletHitbox), typeof(HitboxComponent) }
+            };
+        }
+        public override void UpdateNComponentSetsNRequests(List<Dictionary<Type, List<int>>> componentSetsList)
+        {
+            var playerHitboxes = GetHitboxes(0, componentSetsList);
+            var enemyHitboxes = GetHitboxes(1, componentSetsList);
+            var playerBulletHitboxes = GetHitboxes(2, componentSetsList);
+            var enemyBulletHitboxes = GetHitboxes(3, componentSetsList);
+
             for (int p = 0; p < playerHitboxes.Count; p++)
             {
                 var pHitbox = playerHitboxes[p];
@@ -33,20 +43,6 @@ namespace RhythmGalaxy
                             signal(pHitbox.hp);
                     }
                     enemyHitboxes[e] = eHitbox;
-                    /*
-                    unsafe
-                    {
-                        var b = Globals.ConvertStruct(ref eHitbox);
-
-                        unsafe
-                        {
-                            fixed (HitboxComponent* ptr = &eHitbox)
-                            {
-
-                            }
-                            
-                        }
-                    }*/
                 }
                 for (int e = 0; e < enemyBulletHitboxes.Count; e++)
                 {
@@ -79,6 +75,22 @@ namespace RhythmGalaxy
                     playerBulletHitboxes[b] = bHitbox;
                 }
                 enemyHitboxes[e] = eHitbox;
+            }
+        }
+        public List<HitboxComponent> GetHitboxes(int i, List<Dictionary<Type, List<int>>> componentSetsList)
+        {
+            List<int> hitboxesIndices = componentSetsList[i][typeof(HitboxComponent)];
+            List<HitboxComponent> hitboxes = new List<HitboxComponent>();
+            foreach (var j in hitboxesIndices)
+                hitboxes.Add((HitboxComponent)Database.components[typeof(HitboxComponent)][j]);
+            return hitboxes;
+        }
+        public void SetHitboxes(int i, List<Dictionary<Type, List<int>>> componentSetsList, List<HitboxComponent> hitboxes)
+        {
+            List<int> hitboxesIndices = componentSetsList[i][typeof(HitboxComponent)];
+            for (int j = 0; j < hitboxesIndices.Count; j++)
+            {
+                Database.components[typeof(HitboxComponent)][hitboxesIndices[j]] = hitboxes[j];
             }
         }
         // This function should implement any collision: square & circle, circle and circle, and square and square

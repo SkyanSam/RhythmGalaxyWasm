@@ -7,6 +7,13 @@ using System.Numerics;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 using System.Runtime.InteropServices;
+using TweenSharp;
+using System.Linq.Expressions;
+using TweenSharp.Factory;
+using MonoGame.Extended.Tweening;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
+using TweenSharp.Animation;
 
 namespace RhythmGalaxy
 {
@@ -15,6 +22,7 @@ namespace RhythmGalaxy
         public static string currentScene = "";
         public static Dictionary<string, Scene> scenes = new Dictionary<string, Scene>();
         public static Random random = new Random();
+        //public static TweenHandler? tweenHandler;
         public static float timeDelta { get
             {
                 return 1f / 60f;
@@ -116,5 +124,46 @@ namespace RhythmGalaxy
 
             return arr;
         }
+        /*public static TweenTarget<T, double> Tween<T>(this T target, Expression<Func<T, double>> expression)
+        {
+            var memberExpression = expression.Body as MemberExpression;
+
+            if (memberExpression == null)
+            {
+                // If it's not a MemberExpression, check if it's a UnaryExpression (might be due to implicit conversion)
+                var unaryExpression = expression.Body as UnaryExpression;
+
+                if (unaryExpression != null && unaryExpression.Operand is MemberExpression)
+                {
+                    memberExpression = (MemberExpression)unaryExpression.Operand;
+                }
+            }
+
+            if (memberExpression != null)
+            {
+                //Console.WriteLine(memberExpression.Member.Name); // This should output "hp"
+            }
+            else
+            {
+                Console.WriteLine("Expression is not of type MemberExpression");
+            }
+            return new TweenTargetModified<T, double>(target, memberExpression, ArithmeticProgressFunction);
+        }*/
+        private static double ArithmeticProgressFunction(double start, double end, double progress)
+        {
+            return start + (end - start) * progress;
+        }
+        
+
+        /*public Tween<TMember> TweenTo<TTarget, TMember>(this Tweener tweener, TTarget target, Expression<Func<TTarget, TMember>> expression, TMember toValue, float duration, float delay = 0f) where TTarget : class where TMember : struct
+        {
+            MemberInfo member = ((MemberExpression)expression.Body).Member;
+            TweenMember<TMember> member2 = GetMember<TMember>(target, member.Name);
+            tweener.FindTween(target, member2.Name)?.Cancel();
+            tweener.AllocationCount++;
+            Tween<TMember> tween = new Tween<TMember>(target, duration, delay, member2, toValue);
+            tweener._activeTweens.Add(tween);
+            return tween;
+        }*/
     }
 }

@@ -1,9 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
+using RhythmGalaxy.ECS;
 namespace RhythmGalaxy
 {
-    public struct HitboxComponent
+    public struct PlayerHitbox : Component { public bool queueForPooling { get; set; } }
+    public struct PlayerBulletHitbox : Component { public bool queueForPooling { get; set; } }
+    public struct EnemyBulletHitbox : Component { public bool queueForPooling { get; set; } }
+    public struct EnemyHitbox : Component { public bool queueForPooling { get; set; } }
+    public struct HitboxComponent : Component
     {
+        public bool queueForPooling { get; set; }
         public int x;
         public int y;
         public int hp = -1;
@@ -16,8 +22,8 @@ namespace RhythmGalaxy
             CircleCollider
         }
         public ColliderType colliderType;
-        public delegate void signal(int hp);
-        public List<signal> signals = new List<signal>();
+        public delegate void Signal(int hp);
+        public List<Signal> signals = new List<Signal>();
         public HitboxComponent(int x, int y, int radius, int hp)
         {
             this.x = x;

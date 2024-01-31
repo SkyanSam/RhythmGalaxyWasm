@@ -6,7 +6,6 @@ using Raylib_cs;
 
 public class BulletSpawner 
 {
-    public Dictionary<System.Type, int> refs;
     public float minRotation;
     public float maxRotation;
     public float offset = 0;

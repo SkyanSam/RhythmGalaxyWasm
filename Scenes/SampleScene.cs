@@ -5,7 +5,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using System;
+using MonoGame.Extended.Tweening;
 using static Raylib_cs.Raylib;
+//using TweenSharp;
+//using TweenSharp.Factory;
+//using TweenSharp.Animation;
+using System.Linq.Expressions;
+using TweenSharp.Factory;
 public class SampleScene : Scene 
 {
     Music music;
@@ -16,8 +22,13 @@ public class SampleScene : Scene
     const float maxX = 250 + 460 - 40;
     const float minY = 0;
     const float maxY = 540 - 40;
+
+    public float hp = 0;
+
+    Tweener tweener;
     public void Start()
     {
+        
         // music doesnt work in wasm
         music = LoadMusicStream("Resources/Audio/GoneAndForgotten.mp3");
         
@@ -41,9 +52,27 @@ public class SampleScene : Scene
         player.componentRefs[typeof(TransformComponent)] = transformID;
         player.componentRefs[typeof(SpriteComponent)] = spriteID;
         playerID = Database.AddEntity(player);
+
+        var c01 = new SpriteComponent();
+        var scene = new SampleScene();
+
+        //player.GetComponent<SpriteComponent>().Tween(x => x.scaleX)
+
+        //handler = new TweenHandler();
+
+        //tweener = new Tweener();
+        //tweener.TweenTo(this, x => x.hp, 1.0, 1.0f).RepeatForever().AutoReverse().Easing(EasingFunctions.SineInOut);
+        //ParameterExpression parameter = Expression.Parameter(typeof(SampleScene), "x");
+        //MemberExpression memberExpression = Expression.PropertyOrField(parameter, "hp");
+
+
+        //handler.Add(tween);
     }
     public void Update()
     {
+        //tweener.Update(1f / 60f);
+        //tween.Update(1000 / 60);
+
         ClearBackground(Color.BLACK);
         DrawRectangle(250, 0, 460, 540, new Color(34, 20, 31, 255));
 
@@ -61,6 +90,7 @@ public class SampleScene : Scene
         if (transform.yPosition > maxY) transform.yPosition = maxY;
         Database.entities[playerID].SetComponent(transform);
 
+        GameUI.healthPercent = hp;
         GameUI.Draw();
     }
     public void Stop()

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.MusicTheory;
@@ -8,6 +7,7 @@ using System.IO;
 using System;
 using static Raylib_cs.Raylib;
 using Raylib_cs;
+using System.Runtime.InteropServices;
 
 public class SongManager
 {
@@ -22,10 +22,13 @@ public class SongManager
     public static Music music;
     public static int BPM;
     public static int step;
+
+    public List<Signal> signals;
+    public delegate void Signal(int step);
     private void ReadFromFile()
     {
         midiFile = MidiFile.Read($"{Directory.GetCurrentDirectory()}/Resources/Audio/{midiLocation}");
-        music = LoadMusicStream($"Resources/{audioLocation}");
+        music = LoadMusicStream($"Resources/Audio/{audioLocation}");
         GetDataFromMidi();
     }
     private void GetDataFromMidi()
@@ -73,6 +76,7 @@ public class SongManager
     }
     public static bool IsStartNoteAtStep(int step, NoteName noteName)
     {
+        if (!noteTimestamps.ContainsKey(noteName)) return false;
         foreach (var timeStamp in noteTimestamps[noteName])
             if (GetCurrentStep((float)timeStamp) == step) 
                 return true;
@@ -82,6 +86,7 @@ public class SongManager
     // make custom lerp function if needed for tweening
     public static bool IsMidNoteAtStep(int step, NoteName noteName)
     {
+        if (!noteTimestamps.ContainsKey(noteName)) return false;
         var stepTimeStamp = step * (60f / BPM);
         for (int i = 0; i < noteTimestamps[noteName].Count; i++)
         {
@@ -94,6 +99,7 @@ public class SongManager
     }
     public static bool IsEndNoteAtStep(int step, NoteName noteName)
     {
+        if (!noteTimestamps.ContainsKey(noteName)) return false;
         for (int i = 0; i < noteTimestamps[noteName].Count; i++)
         {
             var timeStamp = noteTimestamps[noteName][i];
@@ -106,9 +112,10 @@ public class SongManager
     public void SetTimeStamps(Melanchall.DryWetMidi.Interaction.Note[] array)
     {
         MetricTimeSpan metricTimeSpan;
+        Console.WriteLine($"\nSetTimeStamps arraylen {array.Length}\n");
         foreach (var note in array)
         {
-            if (noteTimestamps[note.NoteName] == null)
+            if (!noteTimestamps.ContainsKey(note.NoteName))
             {
                 noteTimestamps[note.NoteName] = new List<double>();
                 noteLengths[note.NoteName] = new List<double>();
@@ -121,16 +128,29 @@ public class SongManager
     }
     public void Start(string musicLoc, string midiLoc, int bpm)
     {
+        noteTimestamps = new Dictionary<NoteName, List<double>>();
+        noteLengths = new Dictionary<NoteName, List<double>>();
         audioLocation = musicLoc;
         midiLocation = midiLoc;
         BPM = bpm;
+        step = 0;
+        signals = new List<Signal>();
         ReadFromFile();
+        if (midiFile == null) Console.WriteLine("\nmidi file null\n");
         GetDataFromMidi();
         StartSong();
     }
     public void Update()
     {
         UpdateMusicStream(music);
+        var newStep = GetCurrentStep();
+        if (newStep != step)
+        {
+            step = newStep;
+            foreach (var signal in signals) {
+                signal(step);
+            }
+        }
     }
     
 }

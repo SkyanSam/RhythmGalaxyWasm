@@ -19,6 +19,10 @@ public class SampleTextScene : Scene
         DrawRectangle(250, 0, 460, 540, new Color(34, 20, 31, 255));
         TextBoxSystem.DrawTextBoxed(font, "This is a test of grave error", new Rectangle(250, 0, 460, 540), 40, 0, false, Color.WHITE);
     }
+    public void UpdateUI()
+    {
+
+    }
     public void Stop()
     {
 

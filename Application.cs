@@ -4,9 +4,8 @@ using System.Numerics;
 using System.Runtime.InteropServices.JavaScript;
 using System.Xml.Linq;
 using Raylib_cs;
-using TweenSharp;
-using TweenSharp.Animation;
-using TweenSharp.Factory;
+using RhythmGalaxy.ECS;
+using RhythmGalaxy.Scenes;
 
 namespace RhythmGalaxy
 {
@@ -16,6 +15,8 @@ namespace RhythmGalaxy
         static bool isPendingSceneSwitch = false;
         static string pendingSceneSwitch = "";
         static SpriteSystem spriteSystem;
+        static BulletManager bulletManager;
+        static HitboxSystem hitboxSystem;
         public static void Main()
         {
             try {
@@ -54,29 +55,30 @@ namespace RhythmGalaxy
             Raylib.SetTargetFPS(60);
             renderTarget = Raylib.LoadRenderTexture(960, 540);
 
-            // ECS
-            spriteSystem = new SpriteSystem();
-            spriteSystem.Initialize();
+            
 
             //Globals.tweenHandler = [];
             // Scenes
             Globals.scenes.Add(nameof(SampleScene), new SampleScene());
             Globals.scenes.Add(nameof(SampleTextScene), new SampleTextScene());
+            Globals.scenes.Add(nameof(GameOverScene), new GameOverScene());
+            Globals.scenes.Add(nameof(LogExcerpt1), new LogExcerpt1());
+            Globals.scenes.Add(nameof(LogExcerpt2), new LogExcerpt2());
+            Globals.scenes.Add(nameof(LogExcerpt3), new LogExcerpt3());
             Globals.currentScene = nameof(SampleScene); // use nameof
             Globals.scenes[Globals.currentScene].Start();
             
 
             
-            tween = ((SampleScene)Globals.scenes[Globals.currentScene]).Tween(x => x.hp).To(1.0).In(1.0).Repeat(4).Ease(Easing.CubicEaseInOut);
+            //tween = ((SampleScene)Globals.scenes[Globals.currentScene]).Tween(x => x.hp).To(1.0).In(1.0).Repeat(4).Ease(Easing.CubicEaseInOut);
 
 
         }
-        static Tween<SampleScene, double> tween;
         
         [JSExport]
         public static void Update()
         {
-            tween.Update(1000 / 60);
+            //tween.Update(1000 / 60);
             //Globals.tweenHandler.Update(1000 / 60);
             Raylib.BeginDrawing();
             Raylib.BeginTextureMode(renderTarget);
@@ -85,7 +87,9 @@ namespace RhythmGalaxy
 
             Globals.scenes[Globals.currentScene].Update();
 
-            spriteSystem.UpdateAll();
+            
+
+            //Globals.scenes[Globals.currentScene].UpdateUI();
             Raylib.EndTextureMode();
             Raylib.DrawTextureRec(renderTarget.texture, new Rectangle(0, 0, renderTarget.texture.width, -renderTarget.texture.height), new Vector2(0, 0), Color.WHITE);
             Raylib.EndDrawing();
@@ -94,6 +98,7 @@ namespace RhythmGalaxy
             {
                 Globals.scenes[Globals.currentScene].Stop();
                 Globals.currentScene = pendingSceneSwitch;
+                Database.Reset();
                 Globals.scenes[Globals.currentScene].Start();
                 isPendingSceneSwitch = false;
                 pendingSceneSwitch = "";

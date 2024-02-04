@@ -13,5 +13,7 @@ namespace RhythmGalaxy
         public Texture2D texture2D;
         public float scaleX;
         public float scaleY;
+        public Rectangle source;
+        public bool useSource;
     }
 }

@@ -25,11 +25,19 @@ namespace RhythmGalaxy
 
             Raylib.DrawTexturePro(
                 spriteComponent.texture2D,
-                new Rectangle(0, 0, spriteComponent.texture2D.width, spriteComponent.texture2D.height),
-                new Rectangle((int)transformComponent.xPosition, (int)transformComponent.yPosition, spriteComponent.texture2D.width * transformComponent.xScale * spriteComponent.scaleX, spriteComponent.texture2D.height * transformComponent.yScale * spriteComponent.scaleY),
-                Vector2.Zero, 0, Color.WHITE // UPDATE THIS LINE LATER
+                spriteComponent.useSource? spriteComponent.source : new Rectangle(0, 0, spriteComponent.texture2D.width, spriteComponent.texture2D.height),
+                new Rectangle((int)transformComponent.xPosition, (int)transformComponent.yPosition, GetWidth(spriteComponent) * transformComponent.xScale * spriteComponent.scaleX, GetHeight(spriteComponent) * transformComponent.yScale * spriteComponent.scaleY),
+                new Vector2(GetWidth(spriteComponent), GetHeight(spriteComponent)), transformComponent.zRotation, Color.WHITE // UPDATE THIS LINE LATER
                 );
             base.Update1ComponentSet(componentSet);
+        }
+        public float GetHeight(SpriteComponent spriteComponent)
+        {
+            return spriteComponent.useSource ? spriteComponent.source.height : spriteComponent.texture2D.height; 
+        }
+        public float GetWidth(SpriteComponent spriteComponent)
+        {
+            return spriteComponent.useSource ? spriteComponent.source.width : spriteComponent.texture2D.width;
         }
     }
 }

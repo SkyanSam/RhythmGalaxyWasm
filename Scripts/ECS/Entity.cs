@@ -11,5 +11,6 @@ namespace RhythmGalaxy.ECS
         //public Vector3 transform;
         public bool queueForPooling { get; set; }
         public Dictionary<Type, int> componentRefs;
+        public Entity() { }
     }
 }

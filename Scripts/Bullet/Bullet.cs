@@ -10,6 +10,7 @@ public struct Bullet : Component
     public bool queueForPooling { get; set; }
     public Vector2 position;
     public Vector2 velocity;
+    public float radius;
     public float speed;
     public float rotation;
     public float timer;

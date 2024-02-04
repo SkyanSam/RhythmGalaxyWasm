@@ -16,18 +16,29 @@ namespace RhythmGalaxy
         {
             updateFormat = UpdateFormat.UpdateNRequestsNComponentSets;
             typesetList = new List<Type[]> () {
-                new Type[2] { typeof(PlayerHitbox), typeof(HitboxComponent) },
-                new Type[2] { typeof(EnemyHitbox), typeof(HitboxComponent) },
-                new Type[2] { typeof(PlayerBulletHitbox), typeof(HitboxComponent) },
-                new Type[2] { typeof(EnemyBulletHitbox), typeof(HitboxComponent) }
+                new Type[3] { typeof(PlayerHitbox), typeof(HitboxComponent), typeof(TransformComponent) },
+                new Type[3] { typeof(EnemyHitbox), typeof(HitboxComponent), typeof(TransformComponent) },
+                new Type[3] { typeof(PlayerBulletHitbox), typeof(HitboxComponent), typeof(TransformComponent) },
+                new Type[3] { typeof(EnemyBulletHitbox), typeof(HitboxComponent), typeof(TransformComponent) }
             };
         }
         public override void UpdateNComponentSetsNRequests(List<Dictionary<Type, List<int>>> componentSetsList)
         {
-            var playerHitboxes = GetHitboxes(0, componentSetsList);
-            var enemyHitboxes = GetHitboxes(1, componentSetsList);
-            var playerBulletHitboxes = GetHitboxes(2, componentSetsList);
-            var enemyBulletHitboxes = GetHitboxes(3, componentSetsList);
+            var playerHitboxes = GetComponents<HitboxComponent>(0, componentSetsList);
+            var playerTransforms = GetComponents<TransformComponent>(0, componentSetsList);
+            UpdateHitboxTransform(ref playerHitboxes, playerTransforms);
+
+            var enemyHitboxes = GetComponents<HitboxComponent>(1, componentSetsList);
+            var enemyTransforms = GetComponents<TransformComponent>(1, componentSetsList);
+            UpdateHitboxTransform(ref enemyHitboxes, enemyTransforms);
+
+            var playerBulletHitboxes = GetComponents<HitboxComponent>(2, componentSetsList);
+            var playerBulletTransforms = GetComponents<TransformComponent>(2, componentSetsList);
+            UpdateHitboxTransform(ref playerBulletHitboxes, playerBulletTransforms);
+
+            var enemyBulletHitboxes = GetComponents<HitboxComponent>(3, componentSetsList);
+            var enemyBulletTransforms = GetComponents<TransformComponent>(3, componentSetsList);
+            UpdateHitboxTransform(ref enemyBulletHitboxes, enemyBulletTransforms);
 
             for (int p = 0; p < playerHitboxes.Count; p++)
             {
@@ -39,8 +50,9 @@ namespace RhythmGalaxy
                     {
                         // Inflict damage on player if the player collides with enemy
                         pHitbox.hp = pHitbox.hp - 1;
-                        foreach (var signal in pHitbox.signals)
-                            signal(pHitbox.hp);
+                        if (pHitbox.signals != null)
+                            foreach (var signal in pHitbox.signals)
+                                signal(pHitbox.hp);
                     }
                     enemyHitboxes[e] = eHitbox;
                 }
@@ -51,16 +63,19 @@ namespace RhythmGalaxy
                     {
                         // Inflict damage on player if the player collides with enemy BULLET
                         pHitbox.hp = pHitbox.hp - 1;
-                        foreach (var signal in pHitbox.signals)
-                            signal(pHitbox.hp);
+
+                        if (pHitbox.signals != null)
+                            foreach (var signal in pHitbox.signals)
+                                signal(pHitbox.hp);
                     }
-                    enemyHitboxes[e] = bHitbox;
+                    enemyBulletHitboxes[e] = bHitbox;
                 }
                 playerHitboxes[p] = pHitbox;
             }
             for (int e = 0; e < enemyHitboxes.Count; e += 1)
             {
                 var eHitbox = enemyHitboxes[e];
+                eHitbox.hpTimer -= Globals.timeDelta;
                 for (int b = 0; b < playerBulletHitboxes.Count; b += 1)
                 {
                     var bHitbox = playerBulletHitboxes[b];
@@ -68,31 +83,29 @@ namespace RhythmGalaxy
                     if (Collide(eHitbox, bHitbox))
                     {
                         // Inflict damage on enemy if enemy collides with player BULLET
-                        eHitbox.hp -= 1;
-                        foreach (var signal in eHitbox.signals)
-                            signal(eHitbox.hp);
+                        if (eHitbox.hpTimer <= 0) eHitbox.hp -= 100;
+                        if (eHitbox.signals != null)
+                            foreach (var signal in eHitbox.signals)
+                                signal(eHitbox.hp);
                     }
                     playerBulletHitboxes[b] = bHitbox;
                 }
                 enemyHitboxes[e] = eHitbox;
             }
+            
+            SetComponents(0, componentSetsList, playerHitboxes);
+            SetComponents(1, componentSetsList, enemyHitboxes);
+            SetComponents(2, componentSetsList, playerBulletHitboxes);
+            SetComponents(3, componentSetsList, enemyBulletHitboxes);
+
+            // debug
+            DrawHitboxes(playerHitboxes);
+            DrawHitboxes(enemyHitboxes);
+            DrawHitboxes(playerBulletHitboxes);
+            DrawHitboxes(enemyBulletHitboxes);
+            //
         }
-        public List<HitboxComponent> GetHitboxes(int i, List<Dictionary<Type, List<int>>> componentSetsList)
-        {
-            List<int> hitboxesIndices = componentSetsList[i][typeof(HitboxComponent)];
-            List<HitboxComponent> hitboxes = new List<HitboxComponent>();
-            foreach (var j in hitboxesIndices)
-                hitboxes.Add((HitboxComponent)Database.components[typeof(HitboxComponent)][j]);
-            return hitboxes;
-        }
-        public void SetHitboxes(int i, List<Dictionary<Type, List<int>>> componentSetsList, List<HitboxComponent> hitboxes)
-        {
-            List<int> hitboxesIndices = componentSetsList[i][typeof(HitboxComponent)];
-            for (int j = 0; j < hitboxesIndices.Count; j++)
-            {
-                Database.components[typeof(HitboxComponent)][hitboxesIndices[j]] = hitboxes[j];
-            }
-        }
+        
         // This function should implement any collision: square & circle, circle and circle, and square and square
         bool Collide(HitboxComponent h1, HitboxComponent h2)
         {
@@ -120,6 +133,26 @@ namespace RhythmGalaxy
         Rectangle MakeRectangle(HitboxComponent h)
         {
             return new Rectangle(h.x, h.y, h.rectColliderWidth, h.rectColliderHeight);
+        }
+        public static void UpdateHitboxTransform(ref List<HitboxComponent> hitboxes, List<TransformComponent> transforms)
+        {
+            for (int i = 0; i < hitboxes.Count; i++)
+            {
+                var hbox = hitboxes[i];
+                hbox.x = (int)transforms[i].xPosition + hitboxes[i].offsetX;
+                hbox.y = (int)transforms[i].yPosition + hitboxes[i].offsetY;
+                hitboxes[i] = hbox;
+            }
+        }
+        public static void DrawHitboxes(List<HitboxComponent> hitboxes)
+        {
+            foreach (var component in hitboxes)
+            {
+                if (component.colliderType == HitboxComponent.ColliderType.RectCollider)
+                    DrawRectangleLines(component.x, component.y, component.rectColliderWidth, component.rectColliderHeight, Color.GREEN);
+                if (component.colliderType == HitboxComponent.ColliderType.CircleCollider)
+                    DrawCircleLines(component.x, component.y, component.circleColliderRadius, Color.GREEN);
+            }
         }
     }
 }

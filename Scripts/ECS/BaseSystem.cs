@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace RhythmGalaxy.ECS
 {
+    // NOTE THAT SOME COMPONENTS RETURNED MIGHT BE QUEUED FOR POOLING!
     public class BaseSystem
     {
         // todo: instance
@@ -32,6 +33,8 @@ namespace RhythmGalaxy.ECS
         public IEnumerable<Entity> FindAllEntitiesWithTypes(Type[] types)
         {
             return Database.entities.Where(s => {
+                if (s.queueForPooling) return false;
+                foreach (var key in s.componentRefs.Keys) if (Database.components[key][s.componentRefs[key]].queueForPooling) return false;
                 var hasAll = true;
                 foreach (var t in types)
                 {
@@ -58,7 +61,9 @@ namespace RhythmGalaxy.ECS
                             var entity = entities[i];
                             Dictionary<Type, int> componentSet = new Dictionary<Type, int>();
                             foreach (var type in typeset)
+                            {
                                 componentSet.Add(type, entity.componentRefs[type]);
+                            }
                             Update1ComponentSet(componentSet);
                         });
                     }
@@ -85,36 +90,55 @@ namespace RhythmGalaxy.ECS
                     break;
             }
         }
-    public Dictionary<Type, List<int>> GetListDictionaryForTypeset(Type[] typeset)
-    {
-        var entities = FindAllEntitiesWithTypes(typeset).ToArray();
-        var componentSets = new Dictionary<Type, List<int>>();
-        foreach (var type in typeset)
+        public Dictionary<Type, List<int>> GetListDictionaryForTypeset(Type[] typeset)
         {
-            componentSets.Add(type, new List<int>());
-        }
-        for (int i = 0; i < entities.Length; i++)
-        {
+            var entities = FindAllEntitiesWithTypes(typeset).ToArray();
+            var componentSets = new Dictionary<Type, List<int>>();
             foreach (var type in typeset)
             {
-                componentSets[type].Add(entities[i].componentRefs[type]);
+                componentSets.Add(type, new List<int>());
+            }
+            for (int i = 0; i < entities.Length; i++)
+            {
+                foreach (var type in typeset)
+                {
+                    componentSets[type].Add(entities[i].componentRefs[type]);
+                }
+            }
+            return componentSets;
+        }
+        public virtual void Update1ComponentSet(Dictionary<Type, int> componentSet)
+        {
+
+        }
+
+        public virtual void UpdateNComponentSets(Dictionary<Type, List<int>> componentSets)
+        {
+
+        }
+        public virtual void UpdateNComponentSetsNRequests(List<Dictionary<Type, List<int>>> componentSetsList)
+        {
+            
+        }
+        public List<T> GetComponents<T>(int i, List<Dictionary<Type, List<int>>> componentSetsList) where T : Component
+        {
+            List<int> componentsIndices = componentSetsList[i][typeof(T)];
+            List<T> components = new List<T>();
+            foreach (var j in componentsIndices)
+                components.Add((T)Database.components[typeof(T)][j]);
+            return components;
+        }
+        public void SetComponents<T>(int i, List<Dictionary<Type, List<int>>> componentSetsList, List<T> components) where T : Component
+        {
+            List<int> componentsIndices = componentSetsList[i][typeof(T)];
+            for (int j = 0; j < componentsIndices.Count; j++)
+            {
+                Database.components[typeof(T)][componentsIndices[j]] = components[j];
             }
         }
-        return componentSets;
+        public List<int> GetComponentsIndices<T>(int i, List<Dictionary<Type, List<int>>> componentSetsList) where T : Component
+        {
+            return componentSetsList[i][typeof(T)];
+        }
     }
-    public virtual void Update1ComponentSet(Dictionary<Type, int> componentSet)
-    {
-
-    }
-
-    public virtual void UpdateNComponentSets(Dictionary<Type, List<int>> componentSets)
-    {
-
-    }
-    public virtual void UpdateNComponentSetsNRequests(List<Dictionary<Type, List<int>>> componentSetsList)
-    {
-            
-    }
-        
-}
 }

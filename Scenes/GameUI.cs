@@ -6,6 +6,9 @@ using System.Numerics;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics.Contracts;
 using Melanchall.DryWetMidi.MusicTheory;
+using System.Diagnostics;
+using System;
+using Microsoft.CodeAnalysis.Scripting.Hosting;
 
 public static class GameUI
 {
@@ -19,18 +22,22 @@ public static class GameUI
     public enum ConveyorMode { Hold, Tap }
     public static ConveyorMode conveyorMode = ConveyorMode.Tap;
 
+    public static Texture2D energyHealthBars, conveyorTile, conveyorHit, conveyorHoldEnd, conveyorHoldMiddle, conveyorHoldStart, conveyorSlowDown, conveyorSpeedUp;
+    public static Font chavaFont;
+    public static void Init()
+    {
+        energyHealthBars = LoadTexture("Resources/Sprites/EnergyHealthBars.png");
+        conveyorTile = LoadTexture("Resources/Sprites/ConveyorTile.png");
+        conveyorHit = LoadTexture("Resources/Sprites/ConveyorHit.png");
+        conveyorHoldEnd = LoadTexture("Resources/Sprites/ConveyorHoldEnd.png");
+        conveyorHoldMiddle = LoadTexture("Resources/Sprites/ConveyorHoldMiddle.png");
+        conveyorHoldStart = LoadTexture("Resources/Sprites/ConveyorHoldStart.png");
+        conveyorSlowDown = LoadTexture("Resources/Sprites/ConveyorSlowDown.png");
+        conveyorSpeedUp = LoadTexture("Resources/Sprites/ConveyorSpeedUp.png");
+        chavaFont = LoadFont("Resources/Fonts/ChavaRegular.ttf");
+    }
     public static void Draw()
     {
-        Texture2D energyHealthBars = LoadTexture("Resources/Sprites/EnergyHealthBars.png");
-        Texture2D conveyorTile = LoadTexture("Resources/Sprites/ConveyorTile.png");
-        Texture2D conveyorHit = LoadTexture("Resources/Sprites/ConveyorHit.png");
-        Texture2D conveyorHoldEnd = LoadTexture("Resources/Sprites/ConveyorHoldEnd.png");
-        Texture2D conveyorHoldMiddle = LoadTexture("Resources/Sprites/ConveyorHoldMiddle.png");
-        Texture2D conveyorHoldStart = LoadTexture("Resources/Sprites/ConveyorHoldStart.png");
-        Texture2D conveyorSlowDown = LoadTexture("Resources/Sprites/ConveyorSlowDown.png");
-        Texture2D conveyorSpeedUp = LoadTexture("Resources/Sprites/ConveyorSpeedUp.png");
-        Font chavaFont = LoadFont("Resources/Fonts/ChavaRegular.ttf");
-        
         // Draw UI Background
         DrawRectangle(0, 0, 250, 540, ColorPallete.Black2);
         DrawRectangle(710, 0, 250, 540, ColorPallete.Black2);
@@ -43,10 +50,6 @@ public static class GameUI
         DrawRectangle(720, 30 + (int)((1f - energyPercent) * 160f), 20, (int)(energyPercent * 160f), ColorPallete.Yellow);
         DrawRectangle(760, 30 + (int)((1f - healthPercent) * 160f), 20, (int)(healthPercent * 160f), ColorPallete.PinkRed);
 
-        // this is for testing purposes
-        if (IsKeyDown(KeyboardKey.KEY_SPACE))
-            conveyorOffset += 0.05f;
-        //
         
         // Draw Energy & Health Bar Deco
         for (int i = 0; i < 2; i++)
@@ -55,34 +58,46 @@ public static class GameUI
                 else DrawTexturePro(energyHealthBars, new Rectangle(10 * i, 10, 10, 10), new Rectangle(720 + (40 * i), 30 + (20 * j), 20, 20), Vector2.Zero, 0, Color.WHITE);
 
         // Draw Conveyor Belt
-        conveyorOffset = SongManager.GetCurrentStepRemainder();
+        conveyorOffset = 1f - SongManager.GetCurrentStepRemainder();
         for (int i = 0; i < 8; i++)
             DrawTexturePro(conveyorTile, new Rectangle(0, conveyorOffset * 30, 30, 30), new Rectangle(177, 30 + (60 * i), 60, 60), Vector2.Zero, 0, Color.WHITE);
 
         for (int i = 0; i < 8; i++)
         {
             var source = new Rectangle(0, 0, 30, 30);
-            var dest = new Rectangle(177, 30 + (60 * 7) - (60 * i), 60, 60);
-            if (SongManager.IsMidNoteAtStep(SongManager.GetCurrentStep() - i, NoteName.E))
+            var dest = new Rectangle(177, 30 + (60 * 7) - (60 * i) - (conveyorOffset * 60), 60, 60);
+            if (SongManager.IsMidNoteAtStep(SongManager.GetCurrentStep() + i, NoteName.E))
             {
+                
                 DrawTexturePro(conveyorSlowDown, source, dest, Vector2.Zero, 0, Color.WHITE);
             }
-            else if (SongManager.IsMidNoteAtStep(SongManager.GetCurrentStep() - i, NoteName.F))
+            else if (SongManager.IsMidNoteAtStep(SongManager.GetCurrentStep() + i, NoteName.F))
             {
+                
                 DrawTexturePro(conveyorSpeedUp, source, dest, Vector2.Zero, 0, Color.WHITE);
             }
-            else if (conveyorMode == ConveyorMode.Tap && SongManager.IsStartNoteAtStep(SongManager.GetCurrentStep() - i, NoteName.C))
+            else if (conveyorMode == ConveyorMode.Tap && SongManager.IsStartNoteAtStep(SongManager.GetCurrentStep() + i, NoteName.C))
             {
+                
                 DrawTexturePro(conveyorHit, source, dest, Vector2.Zero, 0, Color.WHITE);
             }
             else if (conveyorMode == ConveyorMode.Hold)
             {
-                if (SongManager.IsMidNoteAtStep(SongManager.GetCurrentStep() - i, NoteName.D))
-                    DrawTexturePro(conveyorHoldMiddle, source, dest, Vector2.Zero, 0, Color.WHITE);
-                else if (SongManager.IsStartNoteAtStep(SongManager.GetCurrentStep() - i, NoteName.D))
-                    DrawTexturePro(conveyorHoldStart, source, dest, Vector2.Zero, 0, Color.WHITE);
-                else if (SongManager.IsEndNoteAtStep(SongManager.GetCurrentStep() - i, NoteName.D))
+                if (SongManager.IsEndNoteAtStep(SongManager.GetCurrentStep() + i, NoteName.D))
+                {
+                    
                     DrawTexturePro(conveyorHoldEnd, source, dest, Vector2.Zero, 0, Color.WHITE);
+                }
+                else if (SongManager.IsStartNoteAtStep(SongManager.GetCurrentStep() + i, NoteName.D))
+                {
+                    
+                    DrawTexturePro(conveyorHoldStart, source, dest, Vector2.Zero, 0, Color.WHITE);
+                }
+                else if (SongManager.IsMidNoteAtStep(SongManager.GetCurrentStep() + i, NoteName.D))
+                {
+                    
+                    DrawTexturePro(conveyorHoldMiddle, source, dest, Vector2.Zero, 0, Color.WHITE);
+                }
             }
         }
         // cannot set line spacing with raylib v 4.5, may need to make a helper function for this workaround

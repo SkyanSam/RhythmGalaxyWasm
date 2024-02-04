@@ -17,7 +17,9 @@ namespace RhythmGalaxy.ECS
             var index = Find(list);
             if (index >= 0) 
             {
-                list[index] = poolable;
+                list.RemoveAt(index);
+                list.Insert(index, poolable);
+                //list[index] = (T2)poolable;
                 return index;
             }
             else 
@@ -32,7 +34,11 @@ namespace RhythmGalaxy.ECS
         }
         public static void Remove<T>(int index, ref List<T> list) where T : Poolable
         {
+            
             list[index].queueForPooling = true;
+            //list.RemoveAt(index);
+            //list.Insert(index, new T());
+            //list[index].queueForPooling = true;
         }
     }
 }

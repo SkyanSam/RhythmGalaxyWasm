@@ -11,11 +11,19 @@ namespace RhythmGalaxy.ECS
     {
         public static List<Entity> entities = new List<Entity>();
         public static Dictionary<Type, List<Component>> components = new Dictionary<Type, List<Component>>();
+
+        public static void Reset()
+        {
+            entities = new List<Entity>();
+            components = new Dictionary<Type, List<Component>>();
+        }
         public static int AddComponent<T>(T component) where T : Component
         {
             if (!components.ContainsKey(typeof(T))) components[typeof(T)] = new List<Component>();
             var list = components[typeof(T)];
-            return Pooling.Add(component, ref list);
+            var index = Pooling.Add(component, ref list);
+            components[typeof(T)] = list;
+            return index;
         }
         public static T GetComponent<T>(int index) where T : Component
         {
@@ -54,10 +62,23 @@ namespace RhythmGalaxy.ECS
                 }
             }
         }
-        
+        public static int FindEntity(Type[] componentTypes, int[] componentIndices)
+        {
+            return entities.FindIndex((Entity e) =>
+            {
+                for (int i = 0; i < componentTypes.Length; i++)
+                {
+                    if (e.componentRefs.ContainsKey(componentTypes[i]) && e.componentRefs[componentTypes[i]] == componentIndices[i])
+                        return true;
+                }
+                return false;
+            });
+        }
         /*public static int FindEntity(Entity e)
         {
             return entities.FindIndex(e2 => e == e2)
         }*/
+
+        // CONSIDER MAKING A FUNCTION THAT TAKES COMPONENT AS INPUT AND THEN FINDS ENTITY THAT MATCHES WITH THAT COMPONENT
     }
 }

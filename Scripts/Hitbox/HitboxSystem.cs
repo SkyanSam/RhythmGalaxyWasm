@@ -68,6 +68,7 @@ namespace RhythmGalaxy
                             foreach (var signal in pHitbox.signals)
                                 signal(pHitbox.hp);
                     }
+                    bHitbox.hpTimer -= Globals.timeDelta;
                     enemyBulletHitboxes[e] = bHitbox;
                 }
                 playerHitboxes[p] = pHitbox;
@@ -80,10 +81,11 @@ namespace RhythmGalaxy
                 {
                     var bHitbox = playerBulletHitboxes[b];
 
-                    if (Collide(eHitbox, bHitbox))
+                    if (Collide(eHitbox, bHitbox) && eHitbox.hpTimer <= 0)
                     {
+                        eHitbox.hpTimer = 0.5f;
                         // Inflict damage on enemy if enemy collides with player BULLET
-                        if (eHitbox.hpTimer <= 0) eHitbox.hp -= 100;
+                        if (eHitbox.hpTimer <= 0) eHitbox.hp -= 1;
                         if (eHitbox.signals != null)
                             foreach (var signal in eHitbox.signals)
                                 signal(eHitbox.hp);

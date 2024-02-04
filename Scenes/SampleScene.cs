@@ -114,12 +114,24 @@ public class SampleScene : Scene
 
         SongManager.Instance.Update();
 
+        var t = 0f;
+        var time = (float)(GetTime() % 40);
+        //Console.WriteLine($"sample scene time {time}");
+        if (0 <= time && time <= 2.5f) t = time / 2.5f;
+        else if (2.5f <= time && time <= 20) t = 1;
+        else if (20 <= time && time <= 22.5f) t = 1f - ((time - 20f) / 2.5f);
+        else t = 0;
+
         for (int i = 0; i < shipIndices.Length; i++)
         {
             if (!shipsQueued[i])
             {
+                
                 var transform = Database.GetComponent<TransformComponent>(Database.entities[shipIndices[i]]);
-                var position = CircleFormation(i * (360f / 6f));
+                var circPosition = CircleFormation(i * (360f / 6f));
+                var rectPosition = RectFormation(i == 0 ? new Vector2(-1, -1) : i == 1 ? new Vector2(0, -1) : i == 2 ? new Vector2(1, -1) : i == 5 ? new Vector2(-1, 1) : i == 4 ? new Vector2(0, 1) : i == 3 ? new Vector2(1, 1) : Vector2.Zero);
+                var position = Vector2.Lerp(circPosition, rectPosition, t > 1f? 1f : t < 0f? 0: t);
+                //if (i == 0) Console.WriteLine($"pos {position.X} {position.Y}");
                 transform.xPosition = position.X;
                 transform.yPosition = position.Y;
                 Database.SetComponent(Database.entities[shipIndices[i]], transform);
@@ -145,7 +157,43 @@ public class SampleScene : Scene
     {
         float rot = rotation + (float)(GetTime() * 90f);
         rot *= (MathF.PI / 180);
-        return new Vector2(480, 148) + (159 * new Vector2(MathF.Cos(rot), MathF.Sin(rot)));
+        return new Vector2(480, 148) + (146 * new Vector2(MathF.Cos(rot), MathF.Sin(rot)));
+    }
+    public Vector2 RectFormation(Vector2 xy)
+    {
+        float x = xy.X;
+        float y = xy.Y;
+        
+        float lineSec = 2f;
+        float time = (float)GetTime() % (lineSec * 4);
+
+        Vector2 topLeft = new Vector2(350, 70);
+        Vector2 topRight = new Vector2(350 + 250, 70);
+        Vector2 bottomRight = new Vector2(350 + 250, 70 + 150);
+        Vector2 bottomLeft = new Vector2(350, 70 + 150);
+        Vector2 a = Vector2.Zero, b = Vector2.Zero;
+        float t = 0;
+        if (0 <= time && time <= lineSec)
+        {
+            a = topLeft; b = topRight;
+            t = time / lineSec;
+        }
+        else if (lineSec <= time && time <= lineSec * 2)
+        {
+            a = topRight; b = bottomRight;
+            t = (time - lineSec) / lineSec;
+        }
+        else if (lineSec * 2 <= time && time <= lineSec * 3)
+        {
+            a = bottomRight; b = bottomLeft;
+            t = (time - lineSec - lineSec) / lineSec;
+        }
+        else if (lineSec * 3 <= time && time <= lineSec * 4)
+        {
+            a = bottomLeft; b = topLeft;
+            t = (time - lineSec - lineSec - lineSec) / lineSec;
+        }
+        return Vector2.Lerp(a, b, t > 1f? 1: t < 0f? 0: t) + new Vector2(x * 50, y * 25);
     }
     public void UpdateUI()
     {

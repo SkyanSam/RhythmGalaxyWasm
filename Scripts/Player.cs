@@ -72,13 +72,13 @@ namespace RhythmGalaxy
             player.componentRefs[typeof(HitboxComponent)] = Database.AddComponent(new HitboxComponent()
             {
                 colliderType = HitboxComponent.ColliderType.CircleCollider,
-                circleColliderRadius = 20,
+                circleColliderRadius = 13,
                 signals = new List<HitboxComponent.Signal>() { (int hp) => {
                     if (hpTimer <= 0)
                     {
                         if (energy > 0.5f) this.hp -= 0.1f;
-                        else this.hp -= 0.3f;
-
+                        else this.hp -= 0.2f;
+                        hpTimer = hpCooldown;
                         if (this.hp <= 0)
                         {
                             QueueGameOver();
@@ -176,7 +176,7 @@ namespace RhythmGalaxy
         public void QueueGameOver()
         {
             Console.WriteLine("Game Over!");
-            GameOverScene.lastScene = "SampleScene";
+            GameOverScene.lastScene = Globals.currentScene;
             Application.SwitchScene("GameOverScene");
         }
         

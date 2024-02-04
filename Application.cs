@@ -65,7 +65,10 @@ namespace RhythmGalaxy
             Globals.scenes.Add(nameof(LogExcerpt1), new LogExcerpt1());
             Globals.scenes.Add(nameof(LogExcerpt2), new LogExcerpt2());
             Globals.scenes.Add(nameof(LogExcerpt3), new LogExcerpt3());
-            Globals.currentScene = nameof(SampleScene); // use nameof
+            Globals.scenes.Add(nameof(BossScene), new BossScene());
+            Globals.scenes.Add(nameof(StartupScene), new StartupScene());
+
+            Globals.currentScene = nameof(StartupScene); // use nameof
             Globals.scenes[Globals.currentScene].Start();
             
 

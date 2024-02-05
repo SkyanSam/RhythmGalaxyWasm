@@ -13,7 +13,11 @@ namespace RhythmGalaxy
     public class BulletManager : BaseSystem
     {
         public static List<Bullet> bullets = new List<Bullet>();
+        public static List<TransformComponent> bulletTransforms = new List<TransformComponent>();
+        public static List<HitboxComponent> bulletHitboxes = new List<HitboxComponent>();
         public static List<int> bulletIndices = new List<int>();
+        public static List<int> bulletTransformsIndices = new List<int>();
+        public static List<int> bulletHitboxesIndices = new List<int>();
         public static List<BulletSpawner> spawners = new List<BulletSpawner>();
 
         public static Texture2D bulletSpriteSheet;
@@ -53,10 +57,13 @@ namespace RhythmGalaxy
         }
         public override void UpdateNComponentSetsNRequests(List<Dictionary<Type, List<int>>> componentSetsList)
         {
-            var bulletTransforms = GetComponents<TransformComponent>(0, componentSetsList);
-            var bulletHitboxes = GetComponents<HitboxComponent>(0, componentSetsList);
+            bulletTransforms = GetComponents<TransformComponent>(0, componentSetsList);
+            bulletHitboxes = GetComponents<HitboxComponent>(0, componentSetsList);
             bullets = GetComponents<Bullet>(0, componentSetsList);
             bulletIndices = GetComponentsIndices<Bullet>(0, componentSetsList);
+            bulletTransformsIndices = GetComponentsIndices<TransformComponent>(0, componentSetsList);
+            bulletHitboxesIndices = GetComponentsIndices<HitboxComponent>(0, componentSetsList);
+
             spawners = GetComponents<BulletSpawner>(1, componentSetsList);
             var spawnerTransforms = GetComponents<TransformComponent>(1, componentSetsList);
 
@@ -83,9 +90,9 @@ namespace RhythmGalaxy
                 spawners[i] = spawner;
             }
 
-            SetComponents(0, componentSetsList, bullets);
-            SetComponents(0, componentSetsList, bulletTransforms);
-            SetComponents(0, componentSetsList, bulletHitboxes);
+            SetComponents(0, componentSetsList, bullets, bulletIndices);
+            SetComponents(0, componentSetsList, bulletTransforms, bulletTransformsIndices);
+            SetComponents(0, componentSetsList, bulletHitboxes, bulletHitboxesIndices);
             SetComponents(1, componentSetsList, spawners);
         }
         void Update()
@@ -116,20 +123,43 @@ namespace RhythmGalaxy
 
                 if (item.timer < 0)
                 {
-                    var e = Database.FindEntity([typeof(Bullet)], [bulletIndices[i]]);
+                    var e = EntityFinder(bulletIndices[i]);
+                    //var e = Database.FindEntity([typeof(Bullet)], []);
                     //Console.WriteLine($"Found entity.. {e}");
                     //Console.WriteLine($"Removed Entity {e}");
-                    Database.RemoveComponent<Bullet>(bulletIndices[i]);
+                    //Database.RemoveComponent<Bullet>(bulletIndices[i]);
                     item.queueForPooling = true;
+                    Database.RemoveComponent<Bullet>(bulletIndices[i]);
+                    var entity = Database.entities[e];
+                    entity.RemoveComponent<SpriteComponent>();
+                    entity.RemoveComponent<TransformComponent>();
+                    entity.RemoveComponent<HitboxComponent>();
+                    entity.componentRefs = new Dictionary<Type, int>(); // reset so indices aren't redestroyed..
+                    Database.entities[e] = entity;
                     Database.RemoveEntity(e);
 
                     bullets.RemoveAt(i);
+                    bulletTransforms.RemoveAt(i);
+                    bulletHitboxes.RemoveAt(i);
                     bulletIndices.RemoveAt(i);
-                    for (int k = 0; k < bulletIndices.Count; i++)
+                    bulletTransformsIndices.RemoveAt(i);
+                    bulletHitboxesIndices.RemoveAt(i);
+                    for (int k = 0; k < bulletIndices.Count; k++)
                     {
                         if (bulletIndices[k] > bulletIndices[i])
                             bulletIndices[k] -= 1;
                     }
+                    for (int k = 0; k < bulletTransformsIndices.Count; k++)
+                    {
+                        if (bulletTransformsIndices[k] > bulletTransformsIndices[i])
+                            bulletTransformsIndices[k] -= 1;
+                    }
+                    for (int k = 0; k < bulletHitboxesIndices.Count; k++)
+                    {
+                        if (bulletHitboxesIndices[k] > bulletHitboxesIndices[i])
+                            bulletHitboxesIndices[k] -= 1;
+                    }
+                    i--;
                 }
 
                 
@@ -138,6 +168,16 @@ namespace RhythmGalaxy
                 // debug
                 //Raylib.DrawCircle((int)item.position.X, (int)item.position.Y, 20f, Color.SKYBLUE);
             }
+        }
+        public static int EntityFinder(int b)
+        {
+            for (int i = 0; i < Database.entities.Count; i++)
+            {
+                if (Database.entities[i].componentRefs.ContainsKey(typeof(Bullet))) {
+                    if (Database.entities[i].componentRefs[typeof(Bullet)] == b) return i;
+                }
+            }
+            return -1;
         }
         public static void AddBullet(Bullet b)
         {

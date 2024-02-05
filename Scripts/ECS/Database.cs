@@ -42,17 +42,21 @@ namespace RhythmGalaxy.ECS
         {
             components[typeof(T)][e.componentRefs[typeof(T)]] = value;
         }
+        public static void RemoveComponent<T>(this Entity e) where T : Component
+        {
+            RemoveComponent<T>(e.componentRefs[typeof(T)]);
+        }
         public static void RemoveComponent<T>(int index) where T : Component
         {
-            if (typeof(T) == typeof(Bullet))
+            if (typeof(T) == typeof(Bullet) || typeof(T) == typeof(SpriteComponent) || typeof(T) == typeof(HitboxComponent))
             {
                 components[typeof(T)].RemoveAt(index);
                 for (int i = 0; i < entities.Count; i++)
                 {
-                    if (entities[i].componentRefs.ContainsKey(typeof(Bullet))) {
+                    if (entities[i].componentRefs.ContainsKey(typeof(T))) {
                         var entity = entities[i];
-                        var eIndex = entity.componentRefs[typeof(Bullet)];
-                        if (eIndex > index) entity.componentRefs[typeof(Bullet)] = eIndex - 1;
+                        var eIndex = entity.componentRefs[typeof(T)];
+                        if (eIndex > index) entity.componentRefs[typeof(T)] = eIndex - 1;
                         // consider adding case if eIndex == index
                         entities[i] = entity;
                     }

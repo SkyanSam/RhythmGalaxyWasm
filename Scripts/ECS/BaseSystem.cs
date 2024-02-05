@@ -146,6 +146,13 @@ namespace RhythmGalaxy.ECS
                 Database.components[typeof(T)][componentsIndices[j]] = components[j];
             }
         }
+        public void SetComponents<T>(int i, List<Dictionary<Type, List<int>>> componentSetsList, List<T> components, List<int> componentsIndices) where T : Component
+        {
+            for (int j = 0; j < componentsIndices.Count; j++)
+            {
+                Database.components[typeof(T)][componentsIndices[j]] = components[j];
+            }
+        }
         public List<int> GetComponentsIndices<T>(int i, List<Dictionary<Type, List<int>>> componentSetsList) where T : Component
         {
             return componentSetsList[i][typeof(T)];

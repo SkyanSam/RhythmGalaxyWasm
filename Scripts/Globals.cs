@@ -108,7 +108,7 @@ namespace RhythmGalaxy
             cast.startPos.DrawLineTo(cast.endPos, color);
         }
 
-        public static unsafe byte[] ConvertStruct<T>(ref T str) where T : struct
+        /*public static unsafe byte[] ConvertStruct<T>(ref T str) where T : struct
         {
             int size = Marshal.SizeOf(str);
             var arr = new byte[size];
@@ -118,6 +118,6 @@ namespace RhythmGalaxy
                 Marshal.StructureToPtr(str, (IntPtr)arrPtr, true);
             }
             return arr;
-        }
+        }*/
     }
 }

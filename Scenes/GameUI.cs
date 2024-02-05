@@ -3,12 +3,8 @@ using Raylib_cs;
 using static Raylib_cs.Raylib;
 using static RhythmGalaxy.TextBoxSystem;
 using System.Numerics;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Diagnostics.Contracts;
 using Melanchall.DryWetMidi.MusicTheory;
-using System.Diagnostics;
 using System;
-using Microsoft.CodeAnalysis.Scripting.Hosting;
 
 public static class GameUI
 {

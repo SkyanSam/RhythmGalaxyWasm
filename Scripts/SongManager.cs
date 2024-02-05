@@ -24,8 +24,6 @@ public class SongManager
     public static int BPM;
     public static int step;
 
-    //public List<Signal> signals;
-    //public delegate void Signal(int step);
     private void ReadFromFile()
     {
         midiFile = MidiFile.Read($"{Directory.GetCurrentDirectory()}/Resources/Audio/{midiLocation}");
@@ -42,13 +40,6 @@ public class SongManager
     private void StartSong()
     {
         PlayMusicStream(music);
-        // fix this later.. threads dont work in webgl :(
-        //Thread.Sleep((int)(songDelayInSeconds * 1000));
-        /*Task.Run(async () =>
-        {
-            await Task.Delay((int)(songDelayInSeconds * 1000));
-            PlayMusicStream(music);
-        });*/
     }
     public static float GetAudioSourceTime()
     {
@@ -138,7 +129,6 @@ public class SongManager
         midiLocation = midiLoc;
         BPM = bpm;
         step = 0;
-        //signals = new List<Signal>();
         ReadFromFile();
         if (midiFile == null) Console.WriteLine("\nmidi file null\n");
         GetDataFromMidi();

@@ -11,7 +11,6 @@ using static Raylib_cs.Raylib;
 //using TweenSharp.Animation;
 using System.Linq.Expressions;
 using RhythmGalaxy.Scripts;
-using Microsoft.CodeAnalysis.Scripting.Hosting;
 using System.Xml;
 public class SampleScene : Scene 
 {

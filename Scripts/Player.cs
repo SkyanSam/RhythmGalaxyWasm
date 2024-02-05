@@ -78,21 +78,8 @@ namespace RhythmGalaxy
                 {
                     colliderType = HitboxComponent.ColliderType.CircleCollider,
                     circleColliderRadius = 9,
-                    //signals = new List<IntPtr>(),
                 });
-            /*HitboxComponent hitboxComponent = player.GetComponent<HitboxComponent>();
-            unsafe
-            {
-                IntPtr onHitPtr = (IntPtr)(delegate*<int, void>)&OnHit;
-                hitboxComponent.signals.Add(onHitPtr);
-            }
-            player.SetComponent(hitboxComponent);*/
             playerID = Database.AddEntity(player);
-
-            /*SongManager.Instance.signals.Add((int step) =>
-            {
-                
-            });*/
         }
         public void Update()
         {

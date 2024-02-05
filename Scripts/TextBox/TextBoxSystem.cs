@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 using static Raylib_cs.Color;
-using CSScripting;
 using System.Text;
 
 namespace RhythmGalaxy

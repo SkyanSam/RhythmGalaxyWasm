@@ -25,8 +25,6 @@ namespace RhythmGalaxy
             CircleCollider
         }
         public ColliderType colliderType;
-        //public delegate void Signal(int hp);
-        //public List<IntPtr> signals = new List<IntPtr>();
         public float hpTimer;
         public HitboxComponent(int x, int y, int radius, int hp)
         {

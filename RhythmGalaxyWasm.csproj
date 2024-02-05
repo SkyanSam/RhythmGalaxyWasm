@@ -20,7 +20,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CS-Script.Core" Version="2.0.0" />
     <PackageReference Include="Melanchall.DryWetMidi" Version="7.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Raylib-cs" Version="4.5.0.4" />
@@ -31,6 +30,10 @@
     <WasmExtraFilesToDeploy Include="main.js" />
     <NativeFileReference Include="raylib.a" />
     <WasmFilesToIncludeInFileSystem Include="Resources\**\*.*" TargetPath="Resources\%(RecursiveDir)\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Plugins\" />
   </ItemGroup>
 
   <Choose>

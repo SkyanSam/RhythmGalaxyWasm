@@ -132,7 +132,7 @@ namespace RhythmGalaxy
                 bs.bulletLifetime = 5;
                 //bs.queueSpawn = true;
                 BulletManager.SpawnBullets(bs);
-                boss.SetComponent(bs);
+                //boss.SetComponent(bs);
             }
         }
         public void Stop()

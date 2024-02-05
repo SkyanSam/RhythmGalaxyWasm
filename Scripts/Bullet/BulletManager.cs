@@ -138,6 +138,14 @@ namespace RhythmGalaxy
                     Database.entities[e] = entity;
                     Database.RemoveEntity(e);
 
+                    var transform = bulletTransforms[i];
+                    transform.queueForPooling = true;
+                    bulletTransforms[i] = transform;
+
+                    var hitbox = bulletHitboxes[i];
+                    hitbox.queueForPooling = true;
+                    bulletHitboxes[i] = hitbox;
+                    /*
                     bullets.RemoveAt(i);
                     bulletTransforms.RemoveAt(i);
                     bulletHitboxes.RemoveAt(i);
@@ -159,10 +167,10 @@ namespace RhythmGalaxy
                         if (bulletHitboxesIndices[k] > bulletHitboxesIndices[i])
                             bulletHitboxesIndices[k] -= 1;
                     }
-                    i--;
+                    i--;*/
                 }
 
-                
+                bullets[i] = item;
 
 
                 // debug

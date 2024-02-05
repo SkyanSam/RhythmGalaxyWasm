@@ -48,7 +48,7 @@ namespace RhythmGalaxy.ECS
         }
         public static void RemoveComponent<T>(int index) where T : Component
         {
-            if (typeof(T) == typeof(Bullet) || typeof(T) == typeof(SpriteComponent) || typeof(T) == typeof(HitboxComponent))
+            /*if (typeof(T) == typeof(Bullet) || typeof(T) == typeof(SpriteComponent) || typeof(T) == typeof(HitboxComponent))
             {
                 components[typeof(T)].RemoveAt(index);
                 for (int i = 0; i < entities.Count; i++)
@@ -61,13 +61,11 @@ namespace RhythmGalaxy.ECS
                         entities[i] = entity;
                     }
                 }
-            }
-            else
-            {
+            }*/
+            
                 var list = components[typeof(T)];
                 Pooling.Remove(index, ref list);
                 components[typeof(T)] = list;
-            }
         }
         public static int AddEntity(Entity entity)
         {

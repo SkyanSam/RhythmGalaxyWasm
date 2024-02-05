@@ -58,7 +58,7 @@ namespace RhythmGalaxy
                 }
                 else if (toggleCredits)
                 {
-                    DrawTextEx(font, "SkyanSam - Programming, Art\n \n Apechs - Music \n \n SandriDraws - Background Art \n \n Press E to go Back", new Vector2(50, 50), 40, 1f, Color.WHITE);
+                    DrawTextEx(font, "SkyanSam - Programming, Art\n \n Apechs - Music \n \n Sunflower Tea - Background Art \n \n Press E to go Back", new Vector2(50, 50), 40, 1f, Color.WHITE);
                     if (IsKeyPressed(KeyboardKey.KEY_E)) toggleCredits = !toggleCredits;
                 }
                 

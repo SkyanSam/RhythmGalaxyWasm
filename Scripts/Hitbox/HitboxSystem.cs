@@ -85,7 +85,7 @@ namespace RhythmGalaxy
                     {
                         eHitbox.hpTimer = 0.5f;
                         // Inflict damage on enemy if enemy collides with player BULLET
-                        if (eHitbox.hpTimer <= 0) eHitbox.hp -= 1;
+                        eHitbox.hp -= 1;
                         if (eHitbox.signals != null)
                             foreach (var signal in eHitbox.signals)
                                 signal(eHitbox.hp);

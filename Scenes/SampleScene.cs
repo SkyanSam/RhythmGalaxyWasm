@@ -27,6 +27,8 @@ public class SampleScene : Scene
     static SpriteSystem spriteSystem;
     static HitboxSystem hitboxSystem;
     static BulletManager bulletManager;
+
+    static Texture2D galaxi;
     public void Start()
     {
         shipIndices = new int[6];
@@ -39,6 +41,7 @@ public class SampleScene : Scene
         bulletManager = new BulletManager();
         bulletManager.Initialize();
         //
+        galaxi = LoadTexture("Resources/Sprites/galaxi.png");
 
         SongManager.Instance = new SongManager();
         SongManager.Instance.Start("GoneAndForgotten.mp3", "GoneAndForgotten.mid", 167 * 2);
@@ -117,6 +120,8 @@ public class SampleScene : Scene
 
         ClearBackground(Color.BLACK);
         DrawRectangle(250, 0, 460, 540, new Color(34, 20, 31, 255));
+
+        DrawTexturePro(galaxi, new Rectangle(0, 0, galaxi.width, galaxi.height), new Rectangle(250, 0, 460, 540), Vector2.Zero, 0, Color.WHITE);
 
 
         SongManager.Instance.Update();

@@ -123,6 +123,7 @@ namespace RhythmGalaxy
 
                 if (item.timer < 0)
                 {
+                    Console.WriteLine($"Timer : {item.timer}");
                     var e = EntityFinder(bulletIndices[i]);
                     //var e = Database.FindEntity([typeof(Bullet)], []);
                     //Console.WriteLine($"Found entity.. {e}");

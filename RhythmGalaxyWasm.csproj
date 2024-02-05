@@ -22,7 +22,6 @@
   <ItemGroup>
     <PackageReference Include="CS-Script.Core" Version="2.0.0" />
     <PackageReference Include="Melanchall.DryWetMidi" Version="7.0.2" />
-    <PackageReference Include="MonoGame.Extended.Tweening" Version="3.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Raylib-cs" Version="4.5.0.4" />
   </ItemGroup>

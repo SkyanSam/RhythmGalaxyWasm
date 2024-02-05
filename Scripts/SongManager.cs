@@ -40,11 +40,14 @@ public class SongManager
     }
     private void StartSong()
     {
-        Task.Run(async () =>
+        PlayMusicStream(music);
+        // fix this later.. threads dont work in webgl :(
+        //Thread.Sleep((int)(songDelayInSeconds * 1000));
+        /*Task.Run(async () =>
         {
             await Task.Delay((int)(songDelayInSeconds * 1000));
             PlayMusicStream(music);
-        });
+        });*/
     }
     public static float GetAudioSourceTime()
     {

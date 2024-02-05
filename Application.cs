@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using Raylib_cs;
 using RhythmGalaxy.ECS;
 using RhythmGalaxy.Scenes;
+using System.Collections.Generic;
 
 namespace RhythmGalaxy
 {
@@ -19,7 +20,9 @@ namespace RhythmGalaxy
         static HitboxSystem hitboxSystem;
         public static void Main()
         {
+#if !UseWebGL
             try {
+#endif
                 Start();
 
 #if !UseWebGL
@@ -27,9 +30,9 @@ namespace RhythmGalaxy
                 {
                     Update();
                 }
-                Stop();        
-#endif
-            } catch (Exception e)
+                Stop();
+            }
+            catch (Exception e)
             {
                 Console.WriteLine("Error: {0}", e.ToString());
                 Console.WriteLine("\n --- Stack Trace --- \n");
@@ -37,11 +40,11 @@ namespace RhythmGalaxy
             }
             finally
             {
-#if !UseWebGL
                 Console.ReadLine();
                 Stop();
-#endif
+
             }
+#endif
         }
 
         public static void Start()
@@ -58,18 +61,7 @@ namespace RhythmGalaxy
             
 
             //Globals.tweenHandler = [];
-            // Scenes
-            Globals.scenes.Add(nameof(SampleScene), new SampleScene());
-            Globals.scenes.Add(nameof(SampleTextScene), new SampleTextScene());
-            Globals.scenes.Add(nameof(GameOverScene), new GameOverScene());
-            Globals.scenes.Add(nameof(LogExcerpt1), new LogExcerpt1());
-            Globals.scenes.Add(nameof(LogExcerpt2), new LogExcerpt2());
-            Globals.scenes.Add(nameof(LogExcerpt3), new LogExcerpt3());
-            Globals.scenes.Add(nameof(BossScene), new BossScene());
-            Globals.scenes.Add(nameof(StartupScene), new StartupScene());
-
-            Globals.currentScene = nameof(StartupScene); // use nameof
-            Globals.scenes[Globals.currentScene].Start();
+            
             
 
             
@@ -77,10 +69,28 @@ namespace RhythmGalaxy
 
 
         }
-        
+
         [JSExport]
         public static void Update()
         {
+            // Scenes
+            if (Globals.currentScene == "") 
+            {
+            
+                Globals.scenes.Add(nameof(SampleScene), new SampleScene());
+                Globals.scenes.Add(nameof(SampleTextScene), new SampleTextScene());
+                Globals.scenes.Add(nameof(GameOverScene), new GameOverScene());
+                Globals.scenes.Add(nameof(LogExcerpt1), new LogExcerpt1());
+                Globals.scenes.Add(nameof(LogExcerpt2), new LogExcerpt2());
+                Globals.scenes.Add(nameof(LogExcerpt3), new LogExcerpt3());
+                Globals.scenes.Add(nameof(BossScene), new BossScene());
+                Globals.scenes.Add(nameof(StartupScene), new StartupScene());
+
+                Globals.currentScene = nameof(StartupScene); // use nameof
+                Globals.scenes[Globals.currentScene].Start();
+            }
+            // End Scenes
+
             //tween.Update(1000 / 60);
             //Globals.tweenHandler.Update(1000 / 60);
             Raylib.BeginDrawing();
@@ -114,14 +124,10 @@ namespace RhythmGalaxy
             Raylib.CloseAudioDevice();
             Raylib.CloseWindow();
         }
-
         public static void SwitchScene(string name)
         {
             isPendingSceneSwitch = true;
             pendingSceneSwitch = name;
         }
-
-        
-
     }
 }

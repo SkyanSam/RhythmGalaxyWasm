@@ -16,9 +16,11 @@ namespace RhythmGalaxy
         static BulletManager bulletManager;
         static Player player;
         static Entity boss;
+        static Texture2D galaxi;
         static int bossIndex;
         public void Start()
         {
+            galaxi = Raylib.LoadTexture("Resources/Sprites/galaxi.png");
             // ECS
             spriteSystem = new SpriteSystem();
             spriteSystem.Initialize();
@@ -42,6 +44,7 @@ namespace RhythmGalaxy
                 if (SongManager.IsStartNoteAtStep(step, Melanchall.DryWetMidi.MusicTheory.NoteName.C))
                 {
                     BulletSpawner bs = boss.GetComponent<BulletSpawner>();
+                    bs.bulletLifetime = 5;
                     bs.queueSpawn = true;
                     boss.SetComponent(bs);
                 }
@@ -82,7 +85,7 @@ namespace RhythmGalaxy
                     minRotation = 0,
                     maxRotation = 360,
                     numberOfBullets = 22,
-                    bulletLifetime = 10,
+                    bulletLifetime = 1f,
                     bulletSpeed = 300,
                     isManual = true,
                     bulletTag = "Enemy",
@@ -97,7 +100,7 @@ namespace RhythmGalaxy
         {
             ClearBackground(Color.BLACK);
             DrawRectangle(250, 0, 460, 540, new Color(34, 20, 31, 255));
-
+            DrawTexturePro(galaxi, new Rectangle(0, 0, galaxi.width, galaxi.height), new Rectangle(250, 0, 460, 540), Vector2.Zero, 0, Color.WHITE);
             SongManager.Instance.Update();
 
             var bossTransform = boss.GetComponent<TransformComponent>();

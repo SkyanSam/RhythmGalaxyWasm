@@ -12,6 +12,7 @@ namespace RhythmGalaxy.Scripts
 {
     class ShipCreator
     {
+        public const int shipHP = 1;
         public static Entity CreateShip1(Vector2 position)
         {
             Entity ship = new Entity();
@@ -38,7 +39,7 @@ namespace RhythmGalaxy.Scripts
                 offsetY = -20,
                 rectColliderHeight = 40,
                 rectColliderWidth = 40,
-                hp = 10,
+                hp = shipHP,
                 signals = new List<HitboxComponent.Signal>() { (hp) => HurtEnemy(hp, ship) }
             });
             ship.componentRefs[typeof(EnemyHitbox)] = Database.AddComponent(new EnemyHitbox());
@@ -81,7 +82,7 @@ namespace RhythmGalaxy.Scripts
                 offsetY = -20,
                 rectColliderHeight = 40,
                 rectColliderWidth = 40,
-                hp = 10,
+                hp = shipHP,
                 signals = new List<HitboxComponent.Signal>() { (hp) => HurtEnemy(hp, ship) }
             });
 
@@ -129,7 +130,7 @@ namespace RhythmGalaxy.Scripts
                 offsetY = -20,
                 rectColliderHeight = 40,
                 rectColliderWidth = 40,
-                hp = 10,
+                hp = shipHP,
                 signals = new List<HitboxComponent.Signal>() { (hp) => HurtEnemy(hp, ship) }
             });
 

@@ -20,6 +20,7 @@ namespace RhythmGalaxy
         static int bossIndex;
         public void Start()
         {
+            Database.Reset();
             galaxi = Raylib.LoadTexture("Resources/Sprites/galaxi.png");
             // ECS
             spriteSystem = new SpriteSystem();
@@ -31,24 +32,18 @@ namespace RhythmGalaxy
             //
 
             SongManager.Instance = new SongManager();
-            SongManager.Instance.Start("GoneAndForgotten.mp3", "GoneAndForgotten.mid", 167 * 2);
-            GameUI.songName = "boss title??";
+            SongManager.Instance.Start("Dust_to_dust.mp3", "GoneAndForgotten.mid", 167 * 2);
+            GameUI.songName = "Dust To Dust";
             GameUI.artistName = "Apechs.mp3";
             GameUI.Init();
 
             player = new Player();
             player.Start();
 
-            SongManager.Instance.signals.Add((int step) =>
+            /*SongManager.Instance.signals.Add((int step) =>
             {
-                if (SongManager.IsStartNoteAtStep(step, Melanchall.DryWetMidi.MusicTheory.NoteName.C))
-                {
-                    BulletSpawner bs = boss.GetComponent<BulletSpawner>();
-                    bs.bulletLifetime = 5;
-                    bs.queueSpawn = true;
-                    boss.SetComponent(bs);
-                }
-            });
+                
+            });*/
             // constructing le boss
             Entity entity = new Entity();
             entity.componentRefs = new Dictionary<Type, int>();
@@ -69,15 +64,8 @@ namespace RhythmGalaxy
                 scaleY = 2
             });
             entity.componentRefs[typeof(HitboxComponent)] = Database.AddComponent(new HitboxComponent() { 
-                offsetX = -40*3, offsetY = (int)(-40*2.5f), hp = 150, colliderType = HitboxComponent.ColliderType.RectCollider,
-                rectColliderHeight = 40 * 5, rectColliderWidth = 40 * 6,
-                signals = new List<HitboxComponent.Signal>() { (int hp) =>
-                {
-                    if (hp == 0) {
-                        // YOU WIN THE BOSS YIPPEEE
-                        Application.SwitchScene(nameof(LogExcerpt3));
-                    }
-                }}
+                offsetX = -40*3, offsetY = (int)(-40*2.5f), hp = 80, colliderType = HitboxComponent.ColliderType.RectCollider,
+                rectColliderHeight = 40 * 5, rectColliderWidth = 40 * 6, signalTag = "Boss"
             });
             entity.componentRefs[typeof(EnemyHitbox)] = Database.AddComponent(new EnemyHitbox());
             entity.componentRefs[typeof(BulletSpawner)] = Database.AddComponent(new BulletSpawner()
@@ -127,6 +115,25 @@ namespace RhythmGalaxy
 
             player.Update();
             GameUI.Draw();
+        }
+        public static void HurtBoss(int hp)
+        {
+            if (hp == 0)
+            {
+                // YOU WIN THE BOSS YIPPEEE
+                Application.SwitchScene(nameof(LogExcerpt3));
+            }
+        }
+        public static void SongManagerStep(int step)
+        {
+            if (SongManager.IsStartNoteAtStep(step, Melanchall.DryWetMidi.MusicTheory.NoteName.C))
+            {
+                BulletSpawner bs = boss.GetComponent<BulletSpawner>();
+                bs.bulletLifetime = 5;
+                //bs.queueSpawn = true;
+                BulletManager.SpawnBullets(bs);
+                boss.SetComponent(bs);
+            }
         }
         public void Stop()
         {

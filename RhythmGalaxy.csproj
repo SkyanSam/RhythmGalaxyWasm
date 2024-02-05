@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Plugins\" />
     <Folder Include="Resources\Logs\" />
   </ItemGroup>
 

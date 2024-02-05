@@ -12,8 +12,8 @@ namespace RhythmGalaxy.Scripts
 {
     class ShipCreator
     {
-        public const int shipHP = 1;
-        public static Entity CreateShip1(Vector2 position)
+        public const int shipHP = 8;
+        public static Entity CreateShip1(Vector2 position, string tag)
         {
             Entity ship = new Entity();
             ship.componentRefs = new Dictionary<Type, int>();
@@ -40,7 +40,7 @@ namespace RhythmGalaxy.Scripts
                 rectColliderHeight = 40,
                 rectColliderWidth = 40,
                 hp = shipHP,
-                signals = new List<HitboxComponent.Signal>() { (hp) => HurtEnemy(hp, ship) }
+                signalTag = tag
             });
             ship.componentRefs[typeof(EnemyHitbox)] = Database.AddComponent(new EnemyHitbox());
             ship.componentRefs[typeof(BulletSpawner)] = Database.AddComponent(new BulletSpawner()
@@ -55,7 +55,7 @@ namespace RhythmGalaxy.Scripts
             });
             return ship;
         }
-        public static Entity CreateShip2(Vector2 position)
+        public static Entity CreateShip2(Vector2 position, string tag)
         {
             Console.WriteLine("!!! creating ship 2 !!!");
             Entity ship = new Entity();
@@ -83,7 +83,7 @@ namespace RhythmGalaxy.Scripts
                 rectColliderHeight = 40,
                 rectColliderWidth = 40,
                 hp = shipHP,
-                signals = new List<HitboxComponent.Signal>() { (hp) => HurtEnemy(hp, ship) }
+                signalTag = tag
             });
 
             ship.componentRefs[typeof(EnemyHitbox)] = Database.AddComponent(new EnemyHitbox());
@@ -104,7 +104,7 @@ namespace RhythmGalaxy.Scripts
             });
             return ship;
         }
-        public static Entity CreateShip3(Vector2 position)
+        public static Entity CreateShip3(Vector2 position, string tag)
         {
             Entity ship = new Entity();
             ship.componentRefs = new Dictionary<Type, int>();
@@ -131,7 +131,7 @@ namespace RhythmGalaxy.Scripts
                 rectColliderHeight = 40,
                 rectColliderWidth = 40,
                 hp = shipHP,
-                signals = new List<HitboxComponent.Signal>() { (hp) => HurtEnemy(hp, ship) }
+                signalTag = tag
             });
 
             ship.componentRefs[typeof(EnemyHitbox)] = Database.AddComponent(new EnemyHitbox());
@@ -153,5 +153,6 @@ namespace RhythmGalaxy.Scripts
             if (hp <= 0) Database.RemoveEntity(index);
             Console.WriteLine($"Removing ship at index {index}");
         }
+        
     }
 }

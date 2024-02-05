@@ -5,16 +5,19 @@ using RhythmGalaxy.ECS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
 using Melanchall.DryWetMidi.MusicTheory;
 using RhythmGalaxy.Scenes;
+using System.Runtime.CompilerServices;
 
 namespace RhythmGalaxy
 {
     public class Player
     {
+        public static Player Instance;
         public enum BulletMode { 
             OneBullet,
             ThreeBullet,
@@ -45,8 +48,10 @@ namespace RhythmGalaxy
         public const float minigunCooldown = 0.1f;
         public float minigunTimer = 0;
         Random random;
+        public Entity player;
         public void Start()
         {
+            Instance = this;
             hp = 1f;
             energy = 1f;
             random = new Random();
@@ -63,90 +68,31 @@ namespace RhythmGalaxy
                 scaleX = 2,
                 scaleY = 2,
             });
-            Entity player = new Entity();
+            player = new Entity();
             player.queueForPooling = false;
             player.componentRefs = new Dictionary<Type, int>();
             player.componentRefs[typeof(TransformComponent)] = transformID;
             player.componentRefs[typeof(SpriteComponent)] = spriteID;
             player.componentRefs[typeof(PlayerHitbox)] = Database.AddComponent(new PlayerHitbox());
-            player.componentRefs[typeof(HitboxComponent)] = Database.AddComponent(new HitboxComponent()
+                player.componentRefs[typeof(HitboxComponent)] = Database.AddComponent(new HitboxComponent()
+                {
+                    colliderType = HitboxComponent.ColliderType.CircleCollider,
+                    circleColliderRadius = 9,
+                    //signals = new List<IntPtr>(),
+                });
+            /*HitboxComponent hitboxComponent = player.GetComponent<HitboxComponent>();
+            unsafe
             {
-                colliderType = HitboxComponent.ColliderType.CircleCollider,
-                circleColliderRadius = 9,
-                signals = new List<HitboxComponent.Signal>() { (int hp) => {
-                    if (hpTimer <= 0)
-                    {
-                        if (energy > 0.5f) this.hp -= 0.05f;
-                        else this.hp -= 0.1f;
-                        hpTimer = hpCooldown;
-                        if (this.hp <= 0)
-                        {
-                            QueueGameOver();
-                        }
-                    }
-                }},
-            });
+                IntPtr onHitPtr = (IntPtr)(delegate*<int, void>)&OnHit;
+                hitboxComponent.signals.Add(onHitPtr);
+            }
+            player.SetComponent(hitboxComponent);*/
             playerID = Database.AddEntity(player);
 
-            SongManager.Instance.signals.Add((int step) =>
+            /*SongManager.Instance.signals.Add((int step) =>
             {
-                if (GameUI.conveyorMode == GameUI.ConveyorMode.Tap)
-                {
-                    if (SongManager.IsStartNoteAtStep(step, NoteName.C))
-                    {
-                        if (bulletMode == BulletMode.OneBullet)
-                        {
-                            var transform = player.GetComponent<TransformComponent>();
-                            BulletManager.AddBullet(new Bullet()
-                            {
-                                tag = "Player",
-                                position = new Vector2(transform.xPosition, transform.yPosition),
-                                rotation = 90,
-                                speed = 727 / 2,
-                                timer = 20,
-                            });
-                        }
-                        else if (bulletMode == BulletMode.ThreeBullet)
-                        {
-                            var transform = player.GetComponent<TransformComponent>();
-
-                            for (int i = 0; i < 3; i++)
-                            {
-                                BulletManager.AddBullet(new Bullet()
-                                {
-                                    tag = "Player",
-                                    position = new Vector2(transform.xPosition, transform.yPosition),
-                                    rotation = (30 * i) + 60,
-                                    speed = 727,
-                                    timer = 20,
-                                });
-                            }
-                        }
-                    }
-                }
-                else if (GameUI.conveyorMode == GameUI.ConveyorMode.Hold) {
-                    if (SongManager.IsMidNoteAtStep(step, NoteName.D) || SongManager.IsStartNoteAtStep(step, NoteName.D) || SongManager.IsEndNoteAtStep(step, NoteName.D))
-                    {
-                        if (bulletMode == BulletMode.Minigun && minigunTimer <= 0)
-                        {
-                            var transform = player.GetComponent<TransformComponent>();
-                            BulletManager.AddBullet(new Bullet()
-                            {
-                                tag = "Player",
-                                position = new Vector2(transform.xPosition + (float)(random.NextDouble() * 4f), transform.yPosition + (float)(random.NextDouble() * 4f)),
-                                rotation = 90,
-                                speed = 727,
-                                timer = 20,
-                            });
-                            minigunTimer = minigunCooldown;
-                        }
-                        else if (bulletMode == BulletMode.Laser)
-                        {
-                            // might want to just draw laser here, and update hitboxes..
-                        }
-                    }
-                }
-            });
+                
+            });*/
         }
         public void Update()
         {
@@ -178,6 +124,79 @@ namespace RhythmGalaxy
             Console.WriteLine("Game Over!");
             GameOverScene.lastScene = Globals.currentScene;
             Application.SwitchScene("GameOverScene");
+        }
+        public static void OnHit(int hp)
+        {
+            if (Player.Instance.hpTimer <= 0)
+            {
+                if (Player.Instance.energy > 0.5f) Player.Instance.hp -= 0.05f;
+                else Player.Instance.hp -= 0.1f;
+                Player.Instance.hpTimer = Player.hpCooldown;
+                if (Player.Instance.hp <= 0)
+                {
+                    Player.Instance.QueueGameOver();
+                }
+            }
+        }
+        public void SongManagerStep(int step)
+        {
+            if (GameUI.conveyorMode == GameUI.ConveyorMode.Tap)
+            {
+                if (SongManager.IsStartNoteAtStep(step, NoteName.C))
+                {
+                    if (bulletMode == BulletMode.OneBullet)
+                    {
+                        var transform = Instance.player.GetComponent<TransformComponent>();
+                        BulletManager.AddBullet(new Bullet()
+                        {
+                            tag = "Player",
+                            position = new Vector2(transform.xPosition, transform.yPosition),
+                            rotation = 90,
+                            speed = 727 / 2,
+                            timer = 20,
+                        });
+                    }
+                    else if (bulletMode == BulletMode.ThreeBullet)
+                    {
+                        var transform = Instance.player.GetComponent<TransformComponent>();
+
+                        for (int i = 0; i < 3; i++)
+                        {
+                            BulletManager.AddBullet(new Bullet()
+                            {
+                                tag = "Player",
+                                position = new Vector2(transform.xPosition, transform.yPosition),
+                                rotation = (30 * i) + 60,
+                                speed = 727,
+                                timer = 20,
+                            });
+                        }
+                    }
+                }
+            }
+            else if (GameUI.conveyorMode == GameUI.ConveyorMode.Hold)
+            {
+                if (SongManager.IsMidNoteAtStep(step, NoteName.D) || SongManager.IsStartNoteAtStep(step, NoteName.D) || SongManager.IsEndNoteAtStep(step, NoteName.D))
+                {
+                    if (bulletMode == BulletMode.Minigun && minigunTimer <= 0)
+                    {
+                        var transform = Instance.player.GetComponent<TransformComponent>();
+                        BulletManager.AddBullet(new Bullet()
+                        {
+                            tag = "Player",
+                            position = new Vector2(transform.xPosition + (float)(random.NextDouble() * 4f), transform.yPosition + (float)(random.NextDouble() * 4f)),
+                            rotation = 90,
+                            speed = 727,
+                            timer = 20,
+                        });
+                        minigunTimer = minigunCooldown;
+                    }
+                    else if (bulletMode == BulletMode.Laser)
+                    {
+                        // might want to just draw laser here, and update hitboxes..
+                    }
+                }
+            }
         }
         
     }

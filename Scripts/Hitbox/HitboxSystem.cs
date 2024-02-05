@@ -7,6 +7,7 @@ using Raylib_cs;
 using static Raylib_cs.Raylib;
 using System.Numerics;
 using RhythmGalaxy.ECS;
+using RhythmGalaxy.Scripts;
 
 namespace RhythmGalaxy
 {
@@ -50,9 +51,11 @@ namespace RhythmGalaxy
                     {
                         // Inflict damage on player if the player collides with enemy
                         pHitbox.hp = pHitbox.hp - 1;
+                        Player.OnHit(pHitbox.hp);
+                        /*
                         if (pHitbox.signals != null)
                             foreach (var signal in pHitbox.signals)
-                                signal(pHitbox.hp);
+                                signal(pHitbox.hp);*/
                     }
                     enemyHitboxes[e] = eHitbox;
                 }
@@ -63,10 +66,11 @@ namespace RhythmGalaxy
                     {
                         // Inflict damage on player if the player collides with enemy BULLET
                         pHitbox.hp = pHitbox.hp - 1;
-
+                        Player.OnHit(pHitbox.hp);
+                        /*
                         if (pHitbox.signals != null)
                             foreach (var signal in pHitbox.signals)
-                                signal(pHitbox.hp);
+                                signal(pHitbox.hp);*/
                     }
                     bHitbox.hpTimer -= Globals.timeDelta;
                     enemyBulletHitboxes[e] = bHitbox;
@@ -86,9 +90,11 @@ namespace RhythmGalaxy
                         eHitbox.hpTimer = 0.5f;
                         // Inflict damage on enemy if enemy collides with player BULLET
                         eHitbox.hp -= 1;
-                        if (eHitbox.signals != null)
+                        if (eHitbox.signalTag.StartsWith("Ship")) SampleScene.HurtEnemy(eHitbox.hp, eHitbox.signalTag);
+                        if (eHitbox.signalTag.StartsWith("Boss")) BossScene.HurtBoss(eHitbox.hp);
+                        /*if (eHitbox.signals != null)
                             foreach (var signal in eHitbox.signals)
-                                signal(eHitbox.hp);
+                                signal(eHitbox.hp);*/
                     }
                     playerBulletHitboxes[b] = bHitbox;
                 }
@@ -101,10 +107,10 @@ namespace RhythmGalaxy
             SetComponents(3, componentSetsList, enemyBulletHitboxes);
 
             // debug
-            DrawHitboxes(playerHitboxes);
-            DrawHitboxes(enemyHitboxes);
-            DrawHitboxes(playerBulletHitboxes);
-            DrawHitboxes(enemyBulletHitboxes);
+            //DrawHitboxes(playerHitboxes);
+            //DrawHitboxes(enemyHitboxes);
+            //DrawHitboxes(playerBulletHitboxes);
+            //DrawHitboxes(enemyBulletHitboxes);
             //
         }
         

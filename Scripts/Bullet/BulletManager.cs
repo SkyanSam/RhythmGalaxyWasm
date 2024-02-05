@@ -121,7 +121,7 @@ namespace RhythmGalaxy
 
                 bullets[i] = item;
 
-                if (item.timer < 0)
+                if (item.timer <= 0)
                 {
                     Console.WriteLine($"Timer : {item.timer}");
                     var e = EntityFinder(bulletIndices[i]);

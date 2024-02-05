@@ -18,14 +18,15 @@ namespace RhythmGalaxy
         public int circleColliderRadius = 0;
         public int rectColliderWidth = 0;
         public int rectColliderHeight = 0;
+        public string signalTag;
         public enum ColliderType
         {
             RectCollider,
             CircleCollider
         }
         public ColliderType colliderType;
-        public delegate void Signal(int hp);
-        public List<Signal> signals = new List<Signal>();
+        //public delegate void Signal(int hp);
+        //public List<IntPtr> signals = new List<IntPtr>();
         public float hpTimer;
         public HitboxComponent(int x, int y, int radius, int hp)
         {
@@ -34,7 +35,7 @@ namespace RhythmGalaxy
             this.hp = hp;
             circleColliderRadius = radius;
             colliderType = ColliderType.CircleCollider;
-            signals = new List<Signal>();
+            //signals = new List<IntPtr>();
         }
         public HitboxComponent(int x, int y, int width, int height, int hp)
         {

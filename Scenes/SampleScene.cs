@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.Scripting.Hosting;
 using System.Xml;
 public class SampleScene : Scene 
 {
+    public static SampleScene Instance;
     public Player player;
     const float minX = 250;
     const float maxX = 250 + 460 - 40;
@@ -31,6 +32,7 @@ public class SampleScene : Scene
     static Texture2D galaxi;
     public void Start()
     {
+        Instance = this;
         shipIndices = new int[6];
         shipsQueued = new bool[6];
         // ECS
@@ -52,13 +54,14 @@ public class SampleScene : Scene
         player = new Player();
         player.Start();
 
-        shipIndices[0] = Database.AddEntity(ShipCreator.CreateShip1(new Vector2(320, 130)));
-        shipIndices[1] = Database.AddEntity(ShipCreator.CreateShip2(new Vector2(460, 70)));
-        shipIndices[2] = Database.AddEntity(ShipCreator.CreateShip3(new Vector2(600, 130)));
-        shipIndices[3] = Database.AddEntity(ShipCreator.CreateShip1(new Vector2(320, 130)));
-        shipIndices[4] = Database.AddEntity(ShipCreator.CreateShip2(new Vector2(460, 70)));
-        shipIndices[5] = Database.AddEntity(ShipCreator.CreateShip3(new Vector2(600, 130)));
+        shipIndices[0] = Database.AddEntity(ShipCreator.CreateShip1(new Vector2(320, 130), "Ship0"));
+        shipIndices[1] = Database.AddEntity(ShipCreator.CreateShip2(new Vector2(460, 70), "Ship1"));
+        shipIndices[2] = Database.AddEntity(ShipCreator.CreateShip3(new Vector2(600, 130), "Ship2"));
+        shipIndices[3] = Database.AddEntity(ShipCreator.CreateShip1(new Vector2(320, 130), "Ship3"));
+        shipIndices[4] = Database.AddEntity(ShipCreator.CreateShip2(new Vector2(460, 70), "Ship4"));
+        shipIndices[5] = Database.AddEntity(ShipCreator.CreateShip3(new Vector2(600, 130), "Ship5"));
 
+        /*
         for (int i = 0; i < shipIndices.Length; i++)
         {
             var hb = Database.entities[shipIndices[i]].GetComponent<HitboxComponent>();
@@ -78,42 +81,46 @@ public class SampleScene : Scene
                 }
             };
             Database.entities[shipIndices[i]].SetComponent(hb);
-        }
+        }*/
 
-        SongManager.Instance.signals.Add((int step) =>
+        /*SongManager.Instance.signals.Add((int step) =>
         {
             //Console.WriteLine($"Signal Step {step}");
-            if (step % 4 == 0)
-            {
-                var spawner = Database.entities[shipIndices[1]].GetComponent<BulletSpawner>();
-                spawner.queueSpawn = true;
-                Database.entities[shipIndices[1]].SetComponent(spawner);
+            
+        });*/
+    }
+    public void SongManagerStep(int step)
+    {
+        if (step % 4 == 0)
+        {
+            var spawner = Database.entities[shipIndices[1]].GetComponent<BulletSpawner>();
+            spawner.queueSpawn = true;
+            Database.entities[shipIndices[1]].SetComponent(spawner);
 
-                spawner = Database.entities[shipIndices[4]].GetComponent<BulletSpawner>();
-                spawner.queueSpawn = true;
-                Database.entities[shipIndices[4]].SetComponent(spawner);
-            }
-            if (step % 4 == 2)
-            {
-                var spawner = Database.entities[shipIndices[2]].GetComponent<BulletSpawner>();
-                spawner.queueSpawn = true;
-                Database.entities[shipIndices[2]].SetComponent(spawner);
+            spawner = Database.entities[shipIndices[4]].GetComponent<BulletSpawner>();
+            spawner.queueSpawn = true;
+            Database.entities[shipIndices[4]].SetComponent(spawner);
+        }
+        if (step % 4 == 2)
+        {
+            var spawner = Database.entities[shipIndices[2]].GetComponent<BulletSpawner>();
+            spawner.queueSpawn = true;
+            Database.entities[shipIndices[2]].SetComponent(spawner);
 
-                spawner = Database.entities[shipIndices[5]].GetComponent<BulletSpawner>();
-                spawner.queueSpawn = true;
-                Database.entities[shipIndices[5]].SetComponent(spawner);
-            }
-            if (step % 8 == 0)
-            {
-                var spawner = Database.entities[shipIndices[0]].GetComponent<BulletSpawner>();
-                spawner.queueSpawn = true;
-                Database.entities[shipIndices[0]].SetComponent(spawner);
+            spawner = Database.entities[shipIndices[5]].GetComponent<BulletSpawner>();
+            spawner.queueSpawn = true;
+            Database.entities[shipIndices[5]].SetComponent(spawner);
+        }
+        if (step % 8 == 0)
+        {
+            var spawner = Database.entities[shipIndices[0]].GetComponent<BulletSpawner>();
+            spawner.queueSpawn = true;
+            Database.entities[shipIndices[0]].SetComponent(spawner);
 
-                spawner = Database.entities[shipIndices[3]].GetComponent<BulletSpawner>();
-                spawner.queueSpawn = true;
-                Database.entities[shipIndices[3]].SetComponent(spawner);
-            }
-        });
+            spawner = Database.entities[shipIndices[3]].GetComponent<BulletSpawner>();
+            spawner.queueSpawn = true;
+            Database.entities[shipIndices[3]].SetComponent(spawner);
+        }
     }
     public void Update()
     {
@@ -206,6 +213,24 @@ public class SampleScene : Scene
             t = (time - lineSec - lineSec - lineSec) / lineSec;
         }
         return Vector2.Lerp(a, b, t > 1f? 1: t < 0f? 0: t) + new Vector2(x * 50, y * 25);
+    }
+    public static void HurtEnemy(int hp, string tag)
+    {
+        Entity entity = new Entity();
+        int index = 0;
+        if (tag == "Ship0") index = 0;
+        if (tag == "Ship1") index = 1;
+        if (tag == "Ship2") index = 2;
+        if (tag == "Ship3") index = 3;
+        if (tag == "Ship4") index = 4;
+        if (tag == "Ship5") index = 5;
+        entity = Database.entities[Instance.shipIndices[index]];
+        
+        if (hp <= 0)
+        {
+            SampleScene.Instance.shipsQueued[index] = true;
+        }
+        ShipCreator.HurtEnemy(hp, entity);
     }
     public void UpdateUI()
     {

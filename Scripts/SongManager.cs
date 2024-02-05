@@ -8,6 +8,7 @@ using System;
 using static Raylib_cs.Raylib;
 using Raylib_cs;
 using System.Runtime.InteropServices;
+using RhythmGalaxy;
 
 public class SongManager
 {
@@ -23,8 +24,8 @@ public class SongManager
     public static int BPM;
     public static int step;
 
-    public List<Signal> signals;
-    public delegate void Signal(int step);
+    //public List<Signal> signals;
+    //public delegate void Signal(int step);
     private void ReadFromFile()
     {
         midiFile = MidiFile.Read($"{Directory.GetCurrentDirectory()}/Resources/Audio/{midiLocation}");
@@ -137,7 +138,7 @@ public class SongManager
         midiLocation = midiLoc;
         BPM = bpm;
         step = 0;
-        signals = new List<Signal>();
+        //signals = new List<Signal>();
         ReadFromFile();
         if (midiFile == null) Console.WriteLine("\nmidi file null\n");
         GetDataFromMidi();
@@ -150,9 +151,9 @@ public class SongManager
         if (newStep != step)
         {
             step = newStep;
-            foreach (var signal in signals) {
-                signal(step);
-            }
+            if (Globals.currentScene == "SampleScene" || Globals.currentScene == "BossScene") Player.Instance.SongManagerStep(step);
+            if (Globals.currentScene == "SampleScene") SampleScene.Instance.SongManagerStep(step);
+            if (Globals.currentScene == "BossScene") BossScene.SongManagerStep(step);
         }
     }
     

@@ -36,8 +36,8 @@ namespace RhythmGalaxy
         const float maxY = 540 - 40;
         public float attackSpeed = 200;
         public float defenseSpeed = 100;
-        public float energyDepletionPerSec = 1f / 15f;
-        public float energyRegainPerSec = 1f / 12f;
+        public float energyDepletionPerSec = 1f / 20f;
+        public float energyRegainPerSec = 1f / 15f;
         public float hp = 1f;
         public const float hpCooldown = 0.5f;
         float hpTimer = 0;
@@ -72,12 +72,12 @@ namespace RhythmGalaxy
             player.componentRefs[typeof(HitboxComponent)] = Database.AddComponent(new HitboxComponent()
             {
                 colliderType = HitboxComponent.ColliderType.CircleCollider,
-                circleColliderRadius = 13,
+                circleColliderRadius = 9,
                 signals = new List<HitboxComponent.Signal>() { (int hp) => {
                     if (hpTimer <= 0)
                     {
-                        if (energy > 0.5f) this.hp -= 0.1f;
-                        else this.hp -= 0.2f;
+                        if (energy > 0.5f) this.hp -= 0.05f;
+                        else this.hp -= 0.1f;
                         hpTimer = hpCooldown;
                         if (this.hp <= 0)
                         {

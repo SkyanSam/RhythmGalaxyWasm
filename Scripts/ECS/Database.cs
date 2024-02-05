@@ -23,6 +23,7 @@ namespace RhythmGalaxy.ECS
             var list = components[typeof(T)];
             var index = Pooling.Add(component, ref list);
             components[typeof(T)] = list;
+            if (typeof(T) == typeof(Bullet)) Console.WriteLine($"Adding bComponent @ {index}");
             return index;
         }
         public static T GetComponent<T>(int index) where T : Component
@@ -43,8 +44,26 @@ namespace RhythmGalaxy.ECS
         }
         public static void RemoveComponent<T>(int index) where T : Component
         {
-            var list = components[typeof(T)];
-            Pooling.Remove(index, ref list);
+            if (typeof(T) == typeof(Bullet))
+            {
+                components[typeof(T)].RemoveAt(index);
+                for (int i = 0; i < entities.Count; i++)
+                {
+                    if (entities[i].componentRefs.ContainsKey(typeof(Bullet))) {
+                        var entity = entities[i];
+                        var eIndex = entity.componentRefs[typeof(Bullet)];
+                        if (eIndex > index) entity.componentRefs[typeof(Bullet)] = eIndex - 1;
+                        // consider adding case if eIndex == index
+                        entities[i] = entity;
+                    }
+                }
+            }
+            else
+            {
+                var list = components[typeof(T)];
+                Pooling.Remove(index, ref list);
+                components[typeof(T)] = list;
+            }
         }
         public static int AddEntity(Entity entity)
         {
@@ -52,13 +71,15 @@ namespace RhythmGalaxy.ECS
         }
         public static void RemoveEntity(int index)
         {
+            var entity = entities[index];
             Pooling.Remove(index, ref entities);
-            foreach (var componentType in entities[index].componentRefs.Keys)
+            foreach (var componentType in entity.componentRefs.Keys)
             {
                 if (componentType != null)
                 {
                     var list = components[componentType];
-                    Pooling.Remove(entities[index].componentRefs[componentType], ref list);
+                    Pooling.Remove(entity.componentRefs[componentType], ref list);
+                    components[componentType] = list;
                 }
             }
         }
@@ -68,10 +89,10 @@ namespace RhythmGalaxy.ECS
             {
                 for (int i = 0; i < componentTypes.Length; i++)
                 {
-                    if (e.componentRefs.ContainsKey(componentTypes[i]) && e.componentRefs[componentTypes[i]] == componentIndices[i])
-                        return true;
+                    if (!e.componentRefs.ContainsKey(componentTypes[i]) || e.componentRefs[componentTypes[i]] != componentIndices[i])
+                        return false;
                 }
-                return false;
+                return true;
             });
         }
         /*public static int FindEntity(Entity e)

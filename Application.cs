@@ -97,6 +97,7 @@ namespace RhythmGalaxy
             Raylib.DrawTextureRec(renderTarget.texture, new Rectangle(0, 0, renderTarget.texture.width, -renderTarget.texture.height), new Vector2(0, 0), Color.WHITE);
             Raylib.EndDrawing();
 
+            
             if (isPendingSceneSwitch)
             {
                 Globals.scenes[Globals.currentScene].Stop();

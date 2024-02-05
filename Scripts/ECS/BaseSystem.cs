@@ -34,7 +34,9 @@ namespace RhythmGalaxy.ECS
         {
             return Database.entities.Where(s => {
                 if (s.queueForPooling) return false;
-                foreach (var key in s.componentRefs.Keys) if (Database.components[key][s.componentRefs[key]].queueForPooling) return false;
+                foreach (var key in s.componentRefs.Keys) 
+                    if (Database.components[key][s.componentRefs[key]].queueForPooling && FindAllEntitiesWithTypeAndIndex(key, s.componentRefs[key]).Count() <= 1) 
+                        return false;
                 var hasAll = true;
                 foreach (var t in types)
                 {
@@ -42,6 +44,14 @@ namespace RhythmGalaxy.ECS
                         hasAll = false;
                 }
                 return hasAll;
+            });
+        }
+        public IEnumerable<Entity> FindAllEntitiesWithTypeAndIndex(Type type, int index)
+        {
+            return Database.entities.Where(s =>
+            {
+                if (!s.componentRefs.ContainsKey(type)) return false;
+                return s.componentRefs[type] == index;
             });
         }
         public virtual void Initialize()

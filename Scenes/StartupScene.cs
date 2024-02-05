@@ -9,15 +9,18 @@ using System.Numerics;
 
 namespace RhythmGalaxy
 {
-    class StartupScene : Scene
+    public class StartupScene : Scene
     {
         Texture2D skyansam;
         Texture2D raylib;
         bool toggleCredits;
+        bool toggleInstructions;
+        Font font;
         public void Start()
         {
             skyansam = LoadTexture("Resources/skyansam_logo.png");
             raylib = LoadTexture("Resources/raylib_logo.png");
+            font = LoadFont("Resources/Fonts/ChavaRegular.ttf");
         }
         public void Update()
         {
@@ -41,10 +44,24 @@ namespace RhythmGalaxy
             }
             else if (10 < time)
             {
-                if (IsKeyPressed(KeyboardKey.KEY_E)) toggleCredits = !toggleCredits;
-                if (!toggleCredits) DrawText("Rhythm Galaxy \n \n Press Space to Start \n \n Press E for Credits", 200, 200, 40, Color.WHITE);
-                else DrawText("SkyanSam - Programming, Art\n \n Apechs - Music \n \n SandriDraws - Background Art \n \n Press E to go Back", 200, 200, 40, Color.WHITE);
-                if (IsKeyPressed(KeyboardKey.KEY_SPACE)) Application.SwitchScene(nameof(LogExcerpt1));
+                if (!toggleCredits && !toggleInstructions)
+                {
+                    if (IsKeyPressed(KeyboardKey.KEY_E)) toggleCredits = !toggleCredits;
+                    if (IsKeyPressed(KeyboardKey.KEY_F)) toggleInstructions = !toggleInstructions;
+                    if (IsKeyPressed(KeyboardKey.KEY_SPACE)) Application.SwitchScene(nameof(LogExcerpt1));
+                    DrawTextEx(font, "Rhythm Galaxy \n \n Press Space to Start \n \n Press E for Credits \n\n Press F for Instructions", new Vector2(50, 50), 40, 1f, Color.WHITE);
+                }
+                else if (toggleInstructions)
+                {
+                    DrawTextEx(font, "Move Player with WASD \n LSHIFT to enter defense mode. \n Defense mode slows the player down \n and increases energy. \n The more energy you have \n the higher your defense is. \n Press F to go back.", new Vector2(50, 50), 40, 1f, Color.WHITE);
+                    if (IsKeyPressed(KeyboardKey.KEY_F)) toggleInstructions = !toggleInstructions;
+                }
+                else if (toggleCredits)
+                {
+                    DrawTextEx(font, "SkyanSam - Programming, Art\n \n Apechs - Music \n \n SandriDraws - Background Art \n \n Press E to go Back", new Vector2(50, 50), 40, 1f, Color.WHITE);
+                    if (IsKeyPressed(KeyboardKey.KEY_E)) toggleCredits = !toggleCredits;
+                }
+                
             }
         }
         public void Stop() { 

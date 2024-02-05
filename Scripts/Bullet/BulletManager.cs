@@ -53,7 +53,6 @@ namespace RhythmGalaxy
         }
         public override void UpdateNComponentSetsNRequests(List<Dictionary<Type, List<int>>> componentSetsList)
         {
-            bullets = GetComponents<Bullet>(0, componentSetsList);
             var bulletTransforms = GetComponents<TransformComponent>(0, componentSetsList);
             var bulletHitboxes = GetComponents<HitboxComponent>(0, componentSetsList);
             bullets = GetComponents<Bullet>(0, componentSetsList);
@@ -91,6 +90,11 @@ namespace RhythmGalaxy
         }
         void Update()
         {
+            if (Database.components.ContainsKey(typeof(Bullet)) )
+            {
+                var count = Database.components[typeof(Bullet)].Count;
+                Console.WriteLine($"Bullet Components count {count}");
+            }
             for (int i = 0; i < spawners.Count; i++)
             {
                 var spawner = spawners[i];
@@ -101,18 +105,35 @@ namespace RhythmGalaxy
             for (int i = 0; i < bullets.Count; i++)
             {
                 // UPDATE
+
                 var item = bullets[i];
                 item.velocity = new Vector2(MathF.Cos(item.rotation * MathF.PI / 180f), -MathF.Sin(item.rotation * MathF.PI / 180f)) * item.speed;
                 item.position += item.velocity * Globals.timeDelta;
                 item.rotation += item.rotationChange * Globals.timeDelta;
                 item.timer -= Globals.timeDelta;
+
                 bullets[i] = item;
 
                 if (item.timer < 0)
                 {
                     var e = Database.FindEntity([typeof(Bullet)], [bulletIndices[i]]);
+                    //Console.WriteLine($"Found entity.. {e}");
+                    //Console.WriteLine($"Removed Entity {e}");
+                    Database.RemoveComponent<Bullet>(bulletIndices[i]);
+                    item.queueForPooling = true;
                     Database.RemoveEntity(e);
+
+                    bullets.RemoveAt(i);
+                    bulletIndices.RemoveAt(i);
+                    for (int k = 0; k < bulletIndices.Count; i++)
+                    {
+                        if (bulletIndices[k] > bulletIndices[i])
+                            bulletIndices[k] -= 1;
+                    }
                 }
+
+                
+
 
                 // debug
                 //Raylib.DrawCircle((int)item.position.X, (int)item.position.Y, 20f, Color.SKYBLUE);

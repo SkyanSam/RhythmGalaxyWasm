@@ -64,15 +64,22 @@ public class SampleScene : Scene
             hb.signals[0] = (int hp) =>
             {
                 //Console.WriteLine($"index {index}");
-                if (hp <= 0) shipsQueued[index] = true;
-                signal(hp); // little workaround?
+                if (shipsQueued[index] == false)
+                {
+                    if (hp <= 0)
+                    {
+                        shipsQueued[index] = true;
+                        signal(hp); // little workaround?
+                    }
+                     
+                }
             };
             Database.entities[shipIndices[i]].SetComponent(hb);
         }
 
         SongManager.Instance.signals.Add((int step) =>
         {
-            Console.WriteLine($"Signal Step {step}");
+            //Console.WriteLine($"Signal Step {step}");
             if (step % 4 == 0)
             {
                 var spawner = Database.entities[shipIndices[1]].GetComponent<BulletSpawner>();

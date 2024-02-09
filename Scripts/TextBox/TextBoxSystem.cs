@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 using static Raylib_cs.Color;
-using System.Text;
 
 namespace RhythmGalaxy
 {
@@ -28,6 +23,22 @@ namespace RhythmGalaxy
         }
 
         // Draw text using font inside rectangle limits with support for text selection
+
+        public static unsafe sbyte* GetSByte(string str)
+        {
+            byte[] bytes = Encoding.ASCII.GetBytes(str);
+
+
+            unsafe
+            {
+                fixed (byte* p = bytes)
+                {
+                    sbyte* sp = (sbyte*)p;
+                    //SP is now what you want
+                    return sp;
+                }
+            }
+        }
         public static unsafe void DrawTextBoxedSelectable(
             Font font,
             string text,
@@ -65,7 +76,7 @@ namespace RhythmGalaxy
             // Holds last value of the character position
             int lastk = -1;
 
-            fixed (sbyte* textNative = Array.ConvertAll(Encoding.ASCII.GetBytes(text), q => Convert.ToSByte(q))) {
+            sbyte* textNative = GetSByte(text);
             
 
                 for (int i = 0, k = 0; i < length; i++, k++)
@@ -221,7 +232,7 @@ namespace RhythmGalaxy
                         textOffsetX += glyphWidth;
                     }
                 }
-            }
+            
         }
     }
 }

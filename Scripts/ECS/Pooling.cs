@@ -30,8 +30,6 @@ namespace RhythmGalaxy.ECS
         }
         public static int Find<T>(List<T> list) where T : Poolable
         {
-
-            //return list.FindIndex(0, list.Count, p => p.queueForPooling);
             for (int i = 0; i < list.Count; i++)
                 if (list[i].queueForPooling) return i;
             return -1;

@@ -60,33 +60,7 @@ public class SampleScene : Scene
         shipIndices[4] = Database.AddEntity(ShipCreator.CreateShip2(new Vector2(460, 70), "Ship4"));
         shipIndices[5] = Database.AddEntity(ShipCreator.CreateShip3(new Vector2(600, 130), "Ship5"));
 
-        /*
-        for (int i = 0; i < shipIndices.Length; i++)
-        {
-            var hb = Database.entities[shipIndices[i]].GetComponent<HitboxComponent>();
-            var index = i;
-            var signal = hb.signals[0];
-            hb.signals[0] = (int hp) =>
-            {
-                //Console.WriteLine($"index {index}");
-                if (shipsQueued[index] == false)
-                {
-                    if (hp <= 0)
-                    {
-                        shipsQueued[index] = true;
-                        signal(hp); // little workaround?
-                    }
-                     
-                }
-            };
-            Database.entities[shipIndices[i]].SetComponent(hb);
-        }*/
-
-        /*SongManager.Instance.signals.Add((int step) =>
-        {
-            //Console.WriteLine($"Signal Step {step}");
-            
-        });*/
+        
     }
     public void SongManagerStep(int step)
     {

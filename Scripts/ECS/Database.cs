@@ -48,21 +48,6 @@ namespace RhythmGalaxy.ECS
         }
         public static void RemoveComponent<T>(int index) where T : Component
         {
-            /*if (typeof(T) == typeof(Bullet) || typeof(T) == typeof(SpriteComponent) || typeof(T) == typeof(HitboxComponent))
-            {
-                components[typeof(T)].RemoveAt(index);
-                for (int i = 0; i < entities.Count; i++)
-                {
-                    if (entities[i].componentRefs.ContainsKey(typeof(T))) {
-                        var entity = entities[i];
-                        var eIndex = entity.componentRefs[typeof(T)];
-                        if (eIndex > index) entity.componentRefs[typeof(T)] = eIndex - 1;
-                        // consider adding case if eIndex == index
-                        entities[i] = entity;
-                    }
-                }
-            }*/
-            
                 var list = components[typeof(T)];
                 Pooling.Remove(index, ref list);
                 components[typeof(T)] = list;
@@ -87,20 +72,19 @@ namespace RhythmGalaxy.ECS
         }
         public static int FindEntity(Type[] componentTypes, int[] componentIndices)
         {
-            return entities.FindIndex((Entity e) =>
+            for (int ei = 0; ei < entities.Count; ei++)
             {
+                var e = entities[ei];
                 for (int i = 0; i < componentTypes.Length; i++)
                 {
                     if (!e.componentRefs.ContainsKey(componentTypes[i]) || e.componentRefs[componentTypes[i]] != componentIndices[i])
-                        return false;
+                        continue;
                 }
-                return true;
-            });
+                return ei;
+            }
+            return -1;
         }
-        /*public static int FindEntity(Entity e)
-        {
-            return entities.FindIndex(e2 => e == e2)
-        }*/
+        
 
         // CONSIDER MAKING A FUNCTION THAT TAKES COMPONENT AS INPUT AND THEN FINDS ENTITY THAT MATCHES WITH THAT COMPONENT
     }

@@ -32,27 +32,36 @@ namespace RhythmGalaxy.ECS
         }
         public IEnumerable<Entity> FindAllEntitiesWithTypes(Type[] types)
         {
-            return Database.entities.Where(s => {
-                if (s.queueForPooling) return false;
-                foreach (var key in s.componentRefs.Keys) 
-                    if (Database.components[key][s.componentRefs[key]].queueForPooling && FindAllEntitiesWithTypeAndIndex(key, s.componentRefs[key]).Count() <= 1) 
-                        return false;
-                var hasAll = true;
-                foreach (var t in types)
-                {
-                    if (!s.componentRefs.ContainsKey(t))
-                        hasAll = false;
-                }
-                return hasAll;
-            });
+            List<Entity> list = new List<Entity>();
+            foreach (var s in Database.entities)
+            {
+                if (HasAllHelper(s, types)) HasAllHelper(s, types);
+            }
+            return list;
+        }
+        public bool HasAllHelper(Entity s, Type[] types)
+        {
+            if (s.queueForPooling) return false;
+            foreach (var key in s.componentRefs.Keys)
+                if (Database.components[key][s.componentRefs[key]].queueForPooling && FindAllEntitiesWithTypeAndIndex(key, s.componentRefs[key]).Count() <= 1)
+                    return false;
+            var hasAll = true;
+            foreach (var t in types)
+            {
+                if (!s.componentRefs.ContainsKey(t))
+                    hasAll = false;
+            }
+            return hasAll;
         }
         public IEnumerable<Entity> FindAllEntitiesWithTypeAndIndex(Type type, int index)
         {
-            return Database.entities.Where(s =>
+            var list = new List<Entity>();
+            foreach (var s in Database.entities)
             {
-                if (!s.componentRefs.ContainsKey(type)) return false;
-                return s.componentRefs[type] == index;
-            });
+                if (!s.componentRefs.ContainsKey(type)) continue;
+                else if (s.componentRefs[type] == index) list.Add(s);
+            }
+            return list;
         }
         public virtual void Initialize()
         {
@@ -66,16 +75,7 @@ namespace RhythmGalaxy.ECS
                     Entity[] entities = FindAllEntitiesWithTypes(typeset).ToArray();
                     if (isParallel)
                     {
-                        Parallel.For(0, entities.Length, i =>
-                        {
-                            var entity = entities[i];
-                            Dictionary<Type, int> componentSet = new Dictionary<Type, int>();
-                            foreach (var type in typeset)
-                            {
-                                componentSet.Add(type, entity.componentRefs[type]);
-                            }
-                            Update1ComponentSet(componentSet);
-                        });
+                        
                     }
                     else
                     {

@@ -33,7 +33,6 @@ namespace RhythmGalaxy
             this.hp = hp;
             circleColliderRadius = radius;
             colliderType = ColliderType.CircleCollider;
-            //signals = new List<IntPtr>();
         }
         public HitboxComponent(int x, int y, int width, int height, int hp)
         {

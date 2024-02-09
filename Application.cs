@@ -65,7 +65,7 @@ namespace RhythmGalaxy
             
 
             
-            //tween = ((SampleScene)Globals.scenes[Globals.currentScene]).Tween(x => x.hp).To(1.0).In(1.0).Repeat(4).Ease(Easing.CubicEaseInOut);
+           
 
 
         }
@@ -86,7 +86,7 @@ namespace RhythmGalaxy
                 Globals.scenes.Add(nameof(BossScene), new BossScene());
                 Globals.scenes.Add(nameof(StartupScene), new StartupScene());
 
-                Globals.currentScene = nameof(StartupScene); // use nameof
+                Globals.currentScene = nameof(SampleScene); // use nameof
                 Globals.scenes[Globals.currentScene].Start();
             }
             // End Scenes
